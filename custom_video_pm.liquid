@@ -1,0 +1,552 @@
+<!-- Start Version 1.4.0 (LCP Fix: thumbnail as <img> instead of background-image) -->
+{% assign spacing_classes = '' %}
+{% if section.settings.margin_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mt-' | append: section.settings.margin_top %}{% endif %}
+{% if section.settings.margin_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mb-' | append: section.settings.margin_bottom %}{% endif %}
+{% if section.settings.padding_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pt-' | append: section.settings.padding_top %}{% endif %}
+{% if section.settings.padding_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pb-' | append: section.settings.padding_bottom %}{% endif %}
+
+{% comment %} Lazy-load activates only when a custom thumbnail exists AND auto-play is off {% endcomment %}
+{% assign use_lazy_load = false %}
+{% if section.settings.image != blank and section.settings.auto_play == false %}
+  {% assign use_lazy_load = true %}
+{% endif %}
+
+<style>
+    .pm-video-{{ section.id }} {
+        background: {{ section.settings.bg_color }};
+        box-sizing: border-box;
+    }
+
+    .pm-video-{{ section.id }} * {
+        box-sizing: border-box;
+    }
+
+    .pm-video-{{ section.id }} .container {
+        max-width: 1216px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* === HEADER AREA === */
+    .pm-video-{{ section.id }} .video-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .pm-video-{{ section.id }} .dynamic-title {
+        color: {{ section.settings.section_title_color }};
+        margin: 0 0 16px 0;
+    }
+
+    .pm-video-{{ section.id }} .subheading {
+        color: {{ section.settings.subheading_color }};
+        font-family: var(--pm-font-body);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* === VIDEO WRAPPER === */
+    .pm-video-{{ section.id }} .video-wrapper {
+        width: 100%;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .pm-video-{{ section.id }} .video-wrapper.is-embed {
+        aspect-ratio: {{ section.settings.aspect_ratio | replace: ':', '/' }};
+    }
+
+    .pm-video-{{ section.id }} .video-wrapper.is-embed iframe,
+    .pm-video-{{ section.id }} .video-wrapper.is-embed video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .pm-video-{{ section.id }} .video-wrapper.is-native {
+        height: auto;
+        display: block;
+    }
+
+    .pm-video-{{ section.id }} .video-wrapper.is-native > img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .pm-video-{{ section.id }} .video-wrapper.has-overlay {
+        aspect-ratio: {{ section.settings.aspect_ratio | replace: ':', '/' }};
+    }
+
+    /* === CUSTOM PLAY BUTTON OVERLAY === */
+    .pm-video-{{ section.id }} .video-custom-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+    }
+
+    .pm-video-{{ section.id }} .video-custom-overlay:hover .custom-play-icon {
+        transform: scale(1.05);
+    }
+
+    /* === LCP FIX: Thumbnail as <img> covering full overlay === */
+    .pm-video-{{ section.id }} .overlay-bg-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        z-index: 0;
+        background-color: #000;
+    }
+
+    .pm-video-{{ section.id }} .custom-play-icon {
+        width: {{ section.settings.custom_play_btn_size }}px;
+        height: {{ section.settings.custom_play_btn_size }}px;
+        display: block;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1400px) {
+        .pm-video-{{ section.id }} .container {
+            padding: 0 32px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .pm-video-{{ section.id }} .container {
+            padding: 0 16px;
+        }
+
+        .pm-video-{{ section.id }} .video-header { margin-bottom: 24px; }
+        .pm-video-{{ section.id }} .subheading { font-size: 16px; }
+        .pm-video-{{ section.id }} .custom-play-icon {
+            width: calc({{ section.settings.custom_play_btn_size }}px * 0.75);
+            height: calc({{ section.settings.custom_play_btn_size }}px * 0.75);
+        }
+    }
+
+    /* === CUSTOM STYLE FOR WEBINAR LP === */
+    @media (max-width: 1024px) {
+        .pm-video-1776974445049.mb-medium {
+            margin-bottom: 43px;
+        }
+    }
+</style>
+
+<div class="pm-video-{{ section.id }}{{ spacing_classes }}{% if section.settings.custom_class != blank %} {{ section.settings.custom_class }}{% endif %}">
+    <div class="container">
+
+        {% if section.settings.section_title != blank or section.settings.subheading_text != blank %}
+        <div class="video-header">
+            {% if section.settings.section_title != blank %}
+                {% assign sec_tag = section.settings.section_title_tag %}
+                {% assign sec_style = section.settings.section_title_style_class %}
+                <{{ sec_tag }} class="dynamic-title{% if sec_style != blank %} {{ sec_style }}{% endif %}">
+                    {{ section.settings.section_title | newline_to_br }}
+                </{{ sec_tag }}>
+            {% endif %}
+
+            {% if section.settings.subheading_text != blank %}
+                <p class="subheading">{{ section.settings.subheading_text }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="video-wrapper {% if section.settings.video_source == 'native' %}is-native{% else %}is-embed{% endif %}{% if use_lazy_load %} has-overlay{% endif %}" id="video-wrapper-{{ section.id }}">
+
+            {% if use_lazy_load %}
+                {% assign bg_image_url = section.settings.image | image_picker_url: 'default' %}
+
+                <div class="video-custom-overlay">
+                    <img
+                        src="{{ bg_image_url }}"
+                        alt=""
+                        class="overlay-bg-img"
+                        fetchpriority="high"
+                        decoding="sync"
+                    >
+
+                    {% if section.settings.custom_play_btn != blank %}
+                        <img src="{{ section.settings.custom_play_btn | image_picker_url: 'default' }}" alt="Play Video" class="custom-play-icon">
+                    {% else %}
+                        <svg class="custom-play-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="{{ section.settings.video_color | default: '#19887D' }}" fill-opacity="0.9"/>
+                            <path d="M68 46.5359C70.6667 48.0755 70.6667 51.9245 68 53.4641L41 69.0526C38.3333 70.5922 35 68.6677 35 65.5885L35 34.4115C35 31.3323 38.3333 29.4078 41 30.9474L68 46.5359Z" fill="white"/>
+                        </svg>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if section.settings.video_source == 'native' %}
+
+                {% assign autoPlay = section.settings.auto_play %}
+                {% assign playButton = section.settings.play_button %}
+
+                {% if use_lazy_load %}
+                    {% assign playButton = false %}
+                {% endif %}
+
+                {% assign smallPlayButton = section.settings.small_play_button %}
+                {% assign fullScreen = section.settings.full_screen %}
+                {% assign playbar = section.settings.playbar %}
+                {% assign videoSettings = section.settings.video_settings %}
+                {% assign controlsOnLoad = section.settings.controls_on_load %}
+                {% assign playerColor = section.settings.video_color | default: settings.color_primary | default: settings.brand.primary_color %}
+
+                {% assign loop = false %}
+                {% if section.settings.loop %}{% assign loop = "loop" %}{% endif %}
+
+                {% assign still_image = section.settings.image | image_picker_url: "video_still.png" %}
+
+                {% assign v = current_site.find_video[section.settings.video] %}
+
+                {% if v %}
+                  {% if use_lazy_load %}
+                    <template id="lazy-video-{{ section.id }}">
+                      {{ v | wistia_video:
+                        playerPreference: "html5",
+                        player_color: playerColor,
+                        still_url: "",
+                        auto_play: autoPlay,
+                        controls_visible_on_load: controlsOnLoad,
+                        playbar: playbar,
+                        fullscreen_button: fullScreen,
+                        playback_rate_control: videoSettings,
+                        quality_control: videoSettings,
+                        settings_control: videoSettings,
+                        small_play_button: smallPlayButton,
+                        endVideoBehavior: loop,
+                        play_button: playButton }}
+                    </template>
+                  {% else %}
+                    {{ v | wistia_video:
+                      playerPreference: "html5",
+                      player_color: playerColor,
+                      still_url: "",
+                      auto_play: autoPlay,
+                      controls_visible_on_load: controlsOnLoad,
+                      playbar: playbar,
+                      fullscreen_button: fullScreen,
+                      playback_rate_control: videoSettings,
+                      quality_control: videoSettings,
+                      settings_control: videoSettings,
+                      small_play_button: smallPlayButton,
+                      endVideoBehavior: loop,
+                      play_button: playButton }}
+                  {% endif %}
+                {% else %}
+                  {{ still_image | image_tag: alt: "Video Placeholder" }}
+                {% endif %}
+
+            {% else %}
+                {% if section.settings.embed_code != blank %}
+                    {% if use_lazy_load %}
+                      <template id="lazy-video-{{ section.id }}">
+                        {{ section.settings.embed_code }}
+                      </template>
+                    {% else %}
+                      {{ section.settings.embed_code }}
+                    {% endif %}
+                {% else %}
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; min-height: 400px; color:#fff; background:#222;">
+                        <p>Please provide an embed code.</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function initLazyVideo_{{ section.id | replace: '-', '_' }}() {
+            var wrapper = document.getElementById('video-wrapper-{{ section.id }}');
+            if(!wrapper) return;
+
+            var overlay = wrapper.querySelector('.video-custom-overlay');
+            if(!overlay) return;
+            if(overlay.dataset.bound === '1') return;
+            overlay.dataset.bound = '1';
+
+            overlay.addEventListener('click', function() {
+                overlay.style.opacity = '0';
+
+                var template = document.getElementById('lazy-video-{{ section.id }}');
+                if (template) {
+                    var html = template.innerHTML;
+                    wrapper.insertAdjacentHTML('beforeend', html);
+
+                    var injectedScripts = wrapper.querySelectorAll('script');
+                    injectedScripts.forEach(function(oldScript) {
+                        var newScript = document.createElement('script');
+                        for (var i = 0; i < oldScript.attributes.length; i++) {
+                            var attr = oldScript.attributes[i];
+                            newScript.setAttribute(attr.name, attr.value);
+                        }
+                        if (oldScript.textContent) {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+
+                    if (wrapper.classList.contains('is-native')) {
+                        window._wq = window._wq || [];
+                        _wq.push({ id: "_all", onReady: function(video) {
+                            try { video.play(); } catch(e) {}
+                        }});
+                    } else {
+                        var iframe = wrapper.querySelector('iframe');
+                        if(iframe) {
+                            var src = iframe.getAttribute('src');
+                            if(src) {
+                                var separator = src.indexOf('?') > -1 ? '&' : '?';
+                                iframe.setAttribute('src', src + separator + 'autoplay=1');
+                            }
+                        }
+                    }
+
+                    template.remove();
+                }
+
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                }, 300);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLazyVideo_{{ section.id | replace: '-', '_' }});
+        } else {
+            initLazyVideo_{{ section.id | replace: '-', '_' }}();
+        }
+    })();
+</script>
+
+{% schema %}
+{
+  "name": "Video Player - PM",
+  "elements": [
+    {
+      "type": "header",
+      "content": "Layout & Design"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Embed Video Aspect Ratio",
+      "info": "Sets the aspect ratio for both Embed Code AND the lazy-load thumbnail overlay for Native videos.",
+      "default": "16:9",
+      "options": [
+        { "label": "16:9 (Widescreen)", "value": "16:9" },
+        { "label": "4:3 (Standard)", "value": "4:3" },
+        { "label": "1:1 (Square)", "value": "1:1" },
+        { "label": "21:9 (Ultrawide)", "value": "21:9" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Source & Content"
+    },
+    {
+      "type": "radio",
+      "id": "video_source",
+      "label": "Video Source",
+      "default": "native",
+      "options": [
+        { "label": "Video Library (Kajabi)", "value": "native" },
+        { "label": "Embed Code (YouTube/Vimeo)", "value": "embed" }
+      ]
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video (Native Library)"
+    },
+    {
+      "type": "textarea",
+      "id": "embed_code",
+      "label": "Embed Code / Iframe",
+      "info": "Paste your YouTube, Vimeo, or external video embed code here."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom Thumbnail Image",
+      "info": "Upload an image to activate lazy-load. The video scripts only download after the user clicks play — huge perf win."
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_play_btn",
+      "label": "Custom Play Button Image (Optional)",
+      "info": "Upload a custom PNG/SVG play button to overlay on the video. If left blank, a default button will be generated."
+    },
+    {
+      "type": "range",
+      "id": "custom_play_btn_size",
+      "label": "Custom Play Button Size (px)",
+      "default": "80",
+      "min": "40",
+      "max": "200",
+      "step": "2"
+    },
+    {
+      "type": "header",
+      "content": "Section Titles"
+    },
+    {
+      "type": "textarea",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Watch Our Latest Training"
+    },
+    {
+      "type": "select",
+      "id": "section_title_tag",
+      "label": "Title HTML Tag (SEO)",
+      "default": "h2",
+      "options": [
+        { "label": "H1", "value": "h1" },
+        { "label": "H2", "value": "h2" },
+        { "label": "H3", "value": "h3" },
+        { "label": "H4", "value": "h4" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_title_style_class",
+      "label": "Title Visual Style",
+      "default": "h2",
+      "options": [
+        { "label": "Default", "value": "" },
+        { "label": "H1 Style", "value": "h1" },
+        { "label": "H2 Style", "value": "h2" },
+        { "label": "H3 Style", "value": "h3" }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "subheading_text",
+      "label": "Subheading Text",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Native Player Settings",
+      "style": "subheading"
+    },
+    {
+      "type": "color",
+      "id": "video_color",
+      "label": "Player Color",
+      "default": "#19887D"
+    },
+    { "type": "checkbox", "id": "auto_play", "label": "Auto Play", "default": "false" },
+    { "type": "checkbox", "id": "loop", "label": "Loop", "default": "false" },
+    { "type": "checkbox", "id": "play_button", "label": "Large Play Button", "default": "true" },
+    { "type": "checkbox", "id": "small_play_button", "label": "Small Play Button", "default": "true" },
+    { "type": "checkbox", "id": "playbar", "label": "Show Playbar", "default": "true" },
+    { "type": "checkbox", "id": "full_screen", "label": "Show Fullscreen", "default": "true" },
+    { "type": "checkbox", "id": "video_settings", "label": "Quality/Speed Controls", "default": "true" },
+    { "type": "checkbox", "id": "controls_on_load", "label": "Controls on Load", "default": "false" },
+    {
+      "type": "header",
+      "content": "Section Colors",
+      "style": "subheading"
+    },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "section_title_color", "label": "Title Color", "default": "#111111" },
+    { "type": "color", "id": "subheading_color", "label": "Subheading Color", "default": "#444444" },
+    {
+      "type": "header",
+      "content": "Spacing",
+      "style": "subheading"
+    },
+    {
+      "type": "select",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "none",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "xl",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "xl",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Advanced",
+      "style": "subheading"
+    },
+    { "type": "text", "id": "custom_class", "label": "Custom CSS Class", "default": "" }
+  ],
+  "presets": [
+    {
+      "name": "Video Player - PM",
+      "category": "CUSTOM"
+    }
+  ]
+}
+{% endschema %}

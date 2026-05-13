@@ -1,0 +1,38 @@
+<!-- Version 1.1.0 -->
+{% assign logo_settings_id = 'logo' | settings_id: section: section, block: block %}
+<style>
+  #block-{{ block.id }} {
+    line-height: 1;
+  }
+  #block-{{ block.id }} .logo__image {
+    display: block;
+    width: {{ block.settings.logo_width | remove: "px" | default: 40 | append: "px" }};
+  }
+  #block-{{ block.id }} .logo__text {
+    color: {{ block.settings.logo_text_color }};
+  }
+  #block-{{ block.id }} .logo__svg {
+    display: block;
+    line-height: 0;
+  }
+  #block-{{ block.id }} .logo__svg svg {
+    width: {{ block.settings.logo_svg_width | remove: "px" | default: 120 | append: "px" }};
+    height: auto;
+    display: block;
+  }
+</style>
+<a class="logo" href="/">
+  {% if block.settings.logo_type == "image" %}
+    {% if block.settings.logo != "" %}
+      {{ block.settings.logo | image_picker_url: 'logo.png' | image_tag: class: "logo__image", alt: block.settings.image_alt, kjb_settings_id: logo_settings_id }}
+    {% elsif settings.brand.logo != "" %}
+      {{ settings.brand.logo | image_picker_url: 'logo.png' | image_tag: class: "logo__image", alt: block.settings.image_alt, kjb_settings_id: logo_settings_id }}
+    {% endif %}
+  {% elsif block.settings.logo_type == "text" %}
+    <p class="logo__text" kjb-settings-id="{{ 'logo_text' | settings_id: section: section, block: block }}">{{ block.settings.logo_text }}</p>
+  {% elsif block.settings.logo_type == "svg" %}
+    {% if block.settings.logo_svg != "" %}
+      <div class="logo__svg">{{ block.settings.logo_svg }}</div>
+    {% endif %}
+  {% endif %}
+</a>

@@ -1,0 +1,92 @@
+<!-- Version 1.1.0 -->
+<head>
+    {% csrf_meta_tags %}
+    <title>
+      {% if page_title %}
+        {{ page_title }}
+      {% else %}
+        {{ current_site.title }}
+      {% endif %}
+    </title>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}" />
+    {% endif %}
+    {% include "global_social_meta_tags" %}
+    {% if settings.favicon and settings.favicon != "" %}
+      <link href="{{ settings.favicon | image_picker_url: 'favicon.png' }}?v=2" rel="shortcut icon" />
+    {% elsif settings.brand.favicon and settings.brand.favicon != "" %}
+      <link href="{{ settings.brand.favicon | image_picker_url: 'favicon.png' }}?v=2" rel="shortcut icon" />
+    {% endif %}
+    <link rel="canonical" href="{{ canonical_url }}" />
+
+    <!-- ====================================================== -->
+    <!-- PERFORMANCE: Preconnect to font hosting origins        -->
+    <!-- ====================================================== -->
+    <link rel="dns-prefetch" href="https://betsybutterick.mykajabi.com">
+    <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin="anonymous">
+    <link rel="preconnect" href="https://kajabi-storefronts-production.kajabi-cdn.com" crossorigin>
+    <link rel="preconnect" href="https://sage.kajabi-cdn.com" crossorigin="anonymous">
+    
+    <!-- ====================================================== -->
+    <!-- PERFORMANCE: Preload above-the-fold fonts              -->
+    <!-- Inter regular (body) + Poppins 600 (H1 heading)        -->
+    <!-- ====================================================== -->
+    <link rel="preload"
+          href="https://s3.amazonaws.com/kajabi-storefronts-production/file-uploads/sites/84846/themes/2166110105/downloads/c6ab48e-8da7-6872-31c7-4f0dae768b3_inter-v20-latin-regular.woff2"
+          as="font" type="font/woff2" crossorigin>
+    <link rel="preload"
+          href="https://s3.amazonaws.com/kajabi-storefronts-production/file-uploads/sites/84846/themes/2166110105/downloads/dfe1a4c-e42a-55cd-170d-ba227af00b_poppins-v24-latin-600.woff2"
+          as="font" type="font/woff2" crossorigin>
+    <link rel="preload"
+      href="https://s3.amazonaws.com/kajabi-storefronts-production/file-uploads/sites/84846/themes/2166110105/downloads/72e4dea-36c4-2437-f282-a37e60c581a_poppins-v24-latin-regular.woff2"
+      as="font" type="font/woff2" crossorigin>
+
+    <!-- Google Fonts ====================================================== -->
+    <!-- DISABLED: Poppins is already self-hosted in pm-style.css -->
+    {% comment %}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% assign body_font = settings.font_family_body | default: settings.brand.font_family_body %}
+    {% assign heading_font = settings.font_family_heading | default: settings.brand.font_family_heading %}
+    {% capture google_fonts %}{{ body_font }},{{ heading_font }}{% endcapture %}
+    {{ google_fonts | to_array | google_fonts_url | async_style_link }}
+    {% endcomment %}
+
+    <!-- Kajabi CSS ======================================================== -->
+    {{ "core.css" | kajabi_asset_url | async_style_link }}
+
+    {% comment %}
+    <!-- Optional Bootstrap CSS - Remove the liquid comment tags to enable -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% endcomment %}
+
+    {% if editor %}
+    <!-- Font Awesome Icons (async, non-blocking) -->
+    {{ "https://use.fontawesome.com/releases/v5.15.2/css/all.css" | async_style_link: crossorigin: "anonymous" }}
+    {% endif %}
+
+
+    {% comment %}
+    <!-- styles.css stays blocking (critical), but small (2.5KB) -->
+    {{ "styles.css" | asset_url | stylesheet_tag }}
+    {% endcomment %}
+
+    <!-- Customer CSS ====================================================== -->
+    <!-- If you're using custom css that affects the first render of the page, replace async_style_link below with styesheet_tag -->
+    {{ "overrides.css" | asset_url | async_style_link }}
+    {% include "global_custom_css" %}
+
+    <!-- Kajabi Editor Only CSS ============================================ -->
+    {% if editor %}
+      {% include "editor_guides" %}
+      {% include "editor_grid" %}
+      {% include "editor_reveal" %}
+    {% endif %}
+
+    <!-- Header hook ======================================================= -->
+    {% if editor %}
+    {% content_for_header %}
+    {% endif %}
+  </head>

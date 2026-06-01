@@ -1,0 +1,1149 @@
+<!-- Start Version 1.8.2 -->
+{% comment %} === BUILD SPACING CLASSES === {% endcomment %}
+{% assign spacing_classes = '' %}
+{% if section.settings.margin_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mt-' | append: section.settings.margin_top %}{% endif %}
+{% if section.settings.margin_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mb-' | append: section.settings.margin_bottom %}{% endif %}
+{% if section.settings.padding_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pt-' | append: section.settings.padding_top %}{% endif %}
+{% if section.settings.padding_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pb-' | append: section.settings.padding_bottom %}{% endif %}
+
+{% comment %} === COLUMN COUNT: ceil(card_count / rows) === {% endcomment %}
+{% assign card_count = section.blocks | size %}
+{% assign rows = section.settings.rows | plus: 0 %}
+{% if rows < 1 %}{% assign rows = 1 %}{% endif %}
+{% assign cols = card_count | divided_by: rows %}
+{% assign remainder = card_count | modulo: rows %}
+{% if remainder > 0 %}{% assign cols = cols | plus: 1 %}{% endif %}
+{% if cols < 1 %}{% assign cols = 1 %}{% endif %}
+
+{% assign icon_position = section.settings.icon_position %}
+{% assign card_direction = section.settings.card_direction %}
+{% assign text_align = section.settings.text_align %}
+{% assign card_text_align = section.settings.card_text_align %}
+{% assign card_text_position = section.settings.card_text_position %}
+
+<style>
+    /* === SCOPED CSS === */
+    .pm-card-grid-{{ section.id }} {
+        background: {{ section.settings.bg_color }};
+        box-sizing: border-box;
+    }
+
+    .pm-card-grid-{{ section.id }} * {
+        box-sizing: border-box;
+    }
+
+    /* === CONTAINER === */
+    .pm-card-grid-{{ section.id }} .container {
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* === GRID === */
+    .pm-card-grid-{{ section.id }} .card-grid {
+        display: grid;
+        grid-template-columns: repeat({{ cols }}, 1fr);
+        gap: {{ section.settings.gap_row }}px {{ section.settings.gap_col }}px;
+        align-items: {% if section.settings.card_height == 'content' %}start{% else %}stretch{% endif %};
+    }
+
+    /* === CARD === */
+    .pm-card-grid-{{ section.id }} .pm-card {
+        background: {{ section.settings.card_bg_color }};
+        border: 2px solid {{ section.settings.card_border_color }};
+        border-radius: var(--pm-card-radius);
+        padding: {{ section.settings.card_padding }}px;
+        position: relative;
+        display: flex;
+        {% if card_direction == 'row' %}
+        flex-direction: row;
+        align-items: start;
+        gap: 12px;
+        {% else %}
+        flex-direction: column;
+        {% endif %}
+        {% if icon_position == 'middle_top_floating' %}
+        margin-top: 28px;
+        {% endif %}
+    }
+
+    /* === CARD ICON: LEFT TOP (default, column) === */
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-column .card-icon {
+        margin-bottom: 22px;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card .card-icon img {
+        max-width: 40px;
+        max-height: 40px;
+        height: auto;
+    }
+
+    /* === CARD DIRECTION: ROW === */
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-row .card-icon {
+        padding: 5px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-row .card-icon img {
+        display: block;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-row .card-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* === CARD ICON: MIDDLE TOP FLOATING === */
+    .pm-card-grid-{{ section.id }} .pm-card.icon-middle-top-floating .card-icon {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: {{ section.settings.card_bg_color }};
+        border-radius: 50%;
+        line-height: 0;
+        margin-bottom: 0;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.icon-middle-top-floating .card-icon img {
+        width: 32px;
+        height: 32px;
+        display: block;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.icon-middle-top-floating .card-content {
+        padding-top: 16px;
+    }
+
+    /* === SECTION HEADER === */
+    .pm-card-grid-{{ section.id }} .card-grid-header {
+        margin-bottom: 32px;
+    }
+    .pm-card-grid-{{ section.id }} .section-desc {
+        color: {{ section.settings.section_desc_color }};
+        margin: 0 0 0;
+        max-width: 720px;
+    }
+    .pm-card-grid-{{ section.id }} .card-grid-header.align-center .section-desc {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .pm-card-grid-{{ section.id }} .card-grid-header.align-right .section-desc {
+        margin-left: auto;
+    }
+
+    /* === SECTION HEADING ALIGNMENT === */
+    .pm-card-grid-{{ section.id }} .card-grid-header.align-left { text-align: left; }
+    .pm-card-grid-{{ section.id }} .card-grid-header.align-center { text-align: center; }
+    .pm-card-grid-{{ section.id }} .card-grid-header.align-right { text-align: right; }
+
+    /* === CARD TEXT ALIGNMENT === */
+    .pm-card-grid-{{ section.id }} .pm-card.card-align-left .card-content { text-align: left; }
+    .pm-card-grid-{{ section.id }} .pm-card.card-align-center .card-content { text-align: center; }
+    .pm-card-grid-{{ section.id }} .pm-card.card-align-right .card-content { text-align: right; }
+
+    /* === CARD TEXT POSITION: BOTTOM === */
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-column.text-position-bottom .card-content {
+        margin-top: auto;
+    }
+
+    {% if section.settings.card_content_max_width != blank %}
+    /* === CARD CONTENT MAX WIDTH === */
+    .pm-card-grid-{{ section.id }} .pm-card.card-direction-column .card-content {
+        max-width: {{ section.settings.card_content_max_width }}px;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.card-align-center .card-content {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .pm-card-grid-{{ section.id }} .pm-card.card-align-right .card-content {
+        margin-left: auto;
+    }
+    {% endif %}
+
+    /* === CARD CONTENT === */
+    .pm-card-grid-{{ section.id }} .card-subtitle {
+        color: {{ section.settings.card_subtitle_color }};
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 8px;
+        display: block;
+    }
+    .pm-card-grid-{{ section.id }} .card-title {
+        color: {{ section.settings.card_title_color }};
+        {% if section.settings.card_title_mb != blank %}
+        margin: 0 0 {{ section.settings.card_title_mb }}px;
+        {% endif %}
+    }
+    .pm-card-grid-{{ section.id }} .card-cta-wrap {
+        margin-top: auto;
+        padding-top: 32px;
+    }
+    
+    /* === MODULE: PLATFORM BUTTONS === */
+    .pm-card-grid-{{ section.id }} .platform-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 32px;
+    }
+    .pm-card-grid-{{ section.id }} .platform-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: {{ section.settings.platform_bg_color }};
+        border-radius: 16px;
+        padding: 15px 20px;
+        text-decoration: none;
+        transition: .3s;
+    }
+    .pm-card-grid-{{ section.id }} .platform-btn:hover {
+        transform: scale(1.025);
+    }
+    .pm-card-grid-{{ section.id }} .platform-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .pm-card-grid-{{ section.id }} .platform-logo-img {
+        max-height: 30px;
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    /* === MODULE: STEP FORM (Kajabi native) === */
+    .pm-card-grid-{{ section.id }} .form-wrapper {
+        text-align: left;
+        margin-top: 32px;
+    }
+
+    /* === MODULE: SOCIAL ICONS === */
+    .pm-card-grid-{{ section.id }} .card-desc {
+        margin: 10px 0 0;
+        line-height: 1.4;
+    }
+    .pm-card-grid-{{ section.id }} .social-list {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        margin-top: 30px;
+    }
+    .pm-card-grid-{{ section.id }} .social-list a {
+        transition: .3s;
+    }
+    .pm-card-grid-{{ section.id }} .social-list a:hover {
+        transform: scale(1.1);
+    }
+    .pm-card-grid-{{ section.id }} .card-align-center .social-list { justify-content: center; }
+    .pm-card-grid-{{ section.id }} .card-align-right .social-list { justify-content: flex-end; }
+    .pm-card-grid-{{ section.id }} .social-list a { display: inline-flex; line-height: 0; }
+    .pm-card-grid-{{ section.id }} .social-list svg { width: 32px; height: 32px; }
+
+    /* === RESPONSIVE TABLET (1 column) === */
+    @media (max-width: 1024px) {
+        .pm-card-grid-{{ section.id }} .card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* === CUSTOM STYLE FOR WEBINAR LP === */
+    .pm-card-grid-{{ section.id }}.section-tired .container,
+    .pm-card-grid-{{ section.id }}.section-then .container {
+        width: 100%;
+        max-width: 1216px;
+        margin-inline: auto;
+        padding: 0;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .container {
+        width: 100%;
+        max-width: 1280px;
+        margin-inline: auto;
+        padding: 0;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-tired .card-grid-header {
+        margin-bottom: 40px;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-tired .dynamic-title {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-tired .pm-card {
+        border: 0;
+        border-radius: 24px;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-tired .pm-card p {
+        line-height: 1.14em;
+        font-size: 36px;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-then .pm-card .card-title {
+        line-height: 1.3em;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-then .card-grid-header {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+    
+    .pm-card-grid-{{ section.id }}.section-then .dynamic-title {
+        font-size: 26px;
+        line-height: 1.14em;
+        font-weight: 500;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-then .card-grid-header::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -130%;
+        transform: translateX(50%);
+        width: 121px;
+        height: 133px;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='121' height='133' viewBox='0 0 121 133' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M1.88755 31.2163C41.319 23.6376 89.2638 70.9626 105.642 104.668C105.925 105.246 106.624 105.49 107.202 105.207C107.78 104.925 108.023 104.226 107.741 103.648C90.906 68.9972 41.9817 21.1337 1.44561 28.9254C0.813858 29.0455 0.400036 29.6574 0.521112 30.2919C0.641221 30.9237 1.25302 31.3374 1.88755 31.2163Z' fill='%2319887D' stroke='%2319887D'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M106.386 103.527C104.699 102.362 102.597 100.876 102.354 100.715C95.7587 96.3341 88.8373 93.2113 81.2201 90.9918C80.602 90.8109 79.9529 91.1678 79.772 91.7859C79.5911 92.4039 79.9481 93.0529 80.5661 93.2338C87.9533 95.3837 94.6666 98.4105 101.064 102.661C101.437 102.908 106.158 106.251 107.164 106.855C107.575 107.105 107.885 107.119 107.959 107.115C108.35 107.11 108.601 106.944 108.768 106.78C108.956 106.593 109.19 106.209 109.175 105.628C109.157 105.02 108.811 103.775 108.749 103.453C107.827 98.6009 106.375 93.2655 106.037 88.0663C105.715 83.1082 106.406 78.2681 109.737 74.1586C110.143 73.6587 110.065 72.9221 109.565 72.5161C109.065 72.1101 108.328 72.1886 107.922 72.6886C104.199 77.2838 103.347 82.6758 103.707 88.2165C104.044 93.3849 105.445 98.6845 106.386 103.527Z' fill='%2319887D' stroke='%2319887D'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .pm-card {
+        border-radius: 40px;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p {
+        line-height: 1.14em;
+        margin-bottom: 16px;
+        color: #484848;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p:last-child {
+        margin-bottom: 0;
+        position: relative;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p:last-child span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p:last-child::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 429px;
+        height: 100%;
+        max-height: 40px;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='332' height='32' viewBox='0 0 332 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.4025 25.0596C17.6902 24.4857 22.3148 24.4149 26.7086 24.3315C29.2519 24.3087 31.6781 24.3603 34.2198 24.4182C37.8022 24.452 41.3831 24.5666 45.0778 24.7681C52.007 25.0653 58.8208 25.3562 65.7485 25.7341C79.4883 26.4836 93.2297 27.1524 107.094 27.4241C121.421 27.7209 135.632 28.0115 149.959 28.3083C163.477 28.5611 176.995 28.8139 190.626 29.2343C204.142 29.5678 217.773 29.9882 231.293 30.1603C245.161 30.2706 259.022 30.7037 272.882 31.2174C279.467 31.415 286.051 31.6126 292.642 31.4875C296.11 31.4344 299.465 31.2943 302.935 31.1605C306.29 31.0204 309.641 31.0417 312.994 30.9823C316.116 30.9103 319.117 31.1547 322.231 31.4862C324.428 31.4445 326.175 30.7321 327.357 29.4234C327.951 28.5674 328.66 27.7984 329.254 26.9423C330.452 24.7462 331.075 22.4378 331.006 20.011C331.053 17.5905 330.637 15.2255 329.526 12.9034C328.966 11.9844 328.289 11.1398 327.729 10.2207C326.601 8.78614 324.998 7.97182 322.694 7.60381C320.96 7.59002 319.341 7.66321 317.607 7.64943C316.105 7.64823 314.488 7.56006 312.987 7.47819C309.639 7.29554 306.404 7.19988 303.054 7.09792C296.124 6.8814 289.305 6.83255 282.374 6.61603C268.976 6.1275 255.581 5.47761 242.292 5.31811C235.127 5.25036 227.963 5.18262 220.799 5.03419C214.329 4.92354 207.744 4.72592 201.275 4.5346C187.414 4.10156 173.549 3.82989 159.685 3.55822C146.051 3.29915 132.302 3.03378 118.668 2.7747C111.158 2.60738 103.531 2.51444 96.0218 2.34712C89.2049 2.21758 82.5082 1.85229 75.6945 1.56139C61.8376 0.8863 47.9807 0.211213 34.1145 0.0202274C30.6475 -0.00734804 27.296 -0.0286253 23.9414 0.111465C21.1656 0.202361 18.3883 0.373942 15.7249 0.632503C13.6404 0.841872 11.5527 1.21261 9.58049 1.58964C8.42119 1.76871 7.25721 2.18983 6.20868 2.61725C4.10851 3.63346 2.69485 5.01018 1.85224 6.74114C-0.060768 10.0291 -0.369827 14.0507 0.369638 17.6448C0.79085 19.7678 1.79093 21.8416 3.373 23.7048C4.17029 24.3137 4.96758 24.9225 5.76486 25.5314C7.59661 26.439 9.44398 26.5398 11.1915 25.8274C11.6596 25.5299 12.5896 25.2575 13.4025 25.0596Z' fill='%23D0F7EF'/%3E%3C/svg%3E");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        pointer-events: none;
+    }
+
+    @media (max-width: 1400px) {
+        .pm-card-grid-{{ section.id }} .container {
+            padding-inline: 32px !important;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .pm-card-grid-{{ section.id }}.section-good-coach .container,
+        .pm-card-grid-{{ section.id }}.section-then .container,
+        .pm-card-grid-{{ section.id }}.section-tired .container {
+            padding-inline: 32px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired {
+            margin-bottom: 48px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .card-grid-header {
+            margin-bottom: 32px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card {
+            padding-inline: 16px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card .card-icon {
+            padding: 3.5px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card .card-icon img {
+            max-width: 25px;
+            max-height: 25px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card p {
+            font-size: 28px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-then .card-grid-header {
+            margin-bottom: 0;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-then .dynamic-title {
+            font-size: 20px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-then .card-grid-header::after {
+            top: -15px;
+            right: -138%;
+            height: 106px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-then .pm-card {
+            padding-inline: 42px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .pm-card {
+            padding-block: 36px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .card-title {
+            margin-bottom: 24px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .card-desc p {
+            font-size: 20px;
+            margin-bottom: 8px !important;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p:last-child::after {
+            max-height: 32px;
+        }
+
+        .pm-card-grid-{{ section.id }} .platform-btn {
+            width: 100%;
+            max-width: 320px;
+            margin-inline: auto;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .pm-card-grid-{{ section.id }}.section-good-coach .container,
+        .pm-card-grid-{{ section.id }}.section-then .container,
+        .pm-card-grid-{{ section.id }}.section-tired .container {
+            padding-inline: 16px !important;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-tired {
+            margin-bottom: 40px;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card {
+            padding: 16px 24px 24px;
+            flex-direction: column;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card .card-icon {
+            padding: 0;
+        }
+        
+        .pm-card-grid-{{ section.id }}.section-tired .pm-card p {
+            font-size: 22px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-then .card-grid-header .dynamic-title {
+            font-size: 18px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-then .card-grid-header::after {
+            top: -7px;
+            right: -130%;
+            height: 77px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='76' height='101' viewBox='0 0 76 101' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M15.4358 21.7851C32.1826 15.7221 52.545 53.582 59.501 80.5465C59.6209 81.0092 59.9178 81.2038 60.1634 80.9778C60.4091 80.7519 60.5123 80.1928 60.3924 79.7301C53.2425 52.0097 32.464 13.719 15.2481 19.9524C14.9798 20.0484 14.804 20.5379 14.8554 21.0455C14.9065 21.5509 15.1663 21.8819 15.4358 21.7851Z' fill='%2319887D' stroke='%2319887D' stroke-width='0.8'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M59.8169 79.6341C59.1003 78.7019 58.2079 77.5133 58.1045 77.384C55.3035 73.8794 52.364 71.3812 49.1289 69.6056C48.8664 69.4609 48.5907 69.7465 48.5139 70.2409C48.437 70.7353 48.5886 71.2546 48.8511 71.3993C51.9885 73.1192 54.8397 75.5406 57.5565 78.9407C57.7149 79.1387 59.7202 81.813 60.1472 82.2964C60.3219 82.4962 60.4537 82.507 60.4849 82.504C60.651 82.4999 60.7577 82.3676 60.8288 82.2362C60.9084 82.0866 61.0079 81.7795 61.0015 81.3147C60.9938 80.8283 60.8467 79.832 60.8204 79.5749C60.4289 75.6929 59.8123 71.4246 59.6688 67.2653C59.5319 63.2988 59.8255 59.4267 61.2403 56.1391C61.4128 55.7391 61.3794 55.1499 61.167 54.8251C60.9547 54.5003 60.6419 54.5631 60.4694 54.9631C58.888 58.6393 58.5263 62.9528 58.6792 67.3854C58.8221 71.5201 59.4175 75.7598 59.8169 79.6341Z' fill='%2319887D' stroke='%2319887D' stroke-width='0.8'/%3E%3C/svg%3E");
+        }
+
+        .pm-card-grid-{{ section.id }}.section-then .pm-card {
+            padding: 32px 16px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-then .pm-card .card-title {
+            font-size: 21px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-then .pm-card .card-cta-wrap {
+            padding-top: 22px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .pm-card {
+            padding: 34px 16px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p {
+            font-size: 18px;
+        }
+
+        .pm-card-grid-{{ section.id }}.section-good-coach .pm-card .card-desc p:last-child::after {
+            max-height: 28px;
+        }
+    }
+
+    /* === CUSTOM STYLE FOR AUDIOBOOK LP === */
+    .pm-card-grid-1780078079125 .card-grid-header {
+        margin-bottom: 34px;
+    }
+
+    .pm-card-grid-1780078079125 .dynamic-title {
+        margin-bottom: 20px !important;
+    }
+
+    .pm-card-grid-1780078079125 .section-desc {
+        font-size: 18px;
+        line-height: 1.4em;
+    }
+
+    .pm-card-grid-1780078079125 .card-grid {
+        max-width: 1216px;
+        margin-inline: auto;
+    }
+
+    .pm-card-grid-1780078079125 .pm-card {
+        border-width: 1px;
+        border-radius: 24px;
+        padding-block: 20px 32px;
+    }
+
+    .pm-card-grid-1780078079125 .card-subtitle {
+        text-transform: capitalize;
+        letter-spacing: 0;
+        margin: 0 0 2px;
+    }
+
+    .pm-card-grid-1780078079125 .card-title {
+        font-size: 24px;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 1024px) {
+        .pm-card-grid-1780078079125 .card-grid {
+            max-width: 616px;
+            gap: 0;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .pm-card-grid-1780078079125 .container {
+            padding-inline: 16px !important;
+        }
+
+        .pm-card-grid-1780078079125 .card-grid-header {
+            margin-bottom: 10px;
+        }
+
+        .pm-card-grid-1780078079125 .card-grid {
+            gap: 3px;
+        }
+
+        .pm-card-grid-1780078079125 .pm-card:not(:nth-child(2)) {
+            padding-inline: 24px;
+        }
+    }
+</style>
+
+<div class="pm-card-grid-{{ section.id }}{{ spacing_classes }}{% if section.settings.custom_class != blank %} {{ section.settings.custom_class }}{% endif %}">
+    <div class="container">
+
+        {% if section.settings.section_title != blank or section.settings.section_subtitle != blank or section.settings.section_desc != blank %}
+        <div class="card-grid-header align-{{ text_align }}">
+            {% if section.settings.section_subtitle != blank %}
+                <span class="overline" style="color: {{ section.settings.overline_color }}; display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">{{ section.settings.section_subtitle }}</span>
+            {% endif %}
+            {% if section.settings.section_title != blank %}
+                {% assign sec_tag = section.settings.section_title_tag %}
+                {% assign sec_style = section.settings.section_title_style_class %}
+                <{{ sec_tag }} class="dynamic-title{% if sec_style != blank %} {{ sec_style }}{% endif %}" style="color: {{ section.settings.section_title_color }}; margin: 0 0 16px;">{{ section.settings.section_title }}</{{ sec_tag }}>
+            {% endif %}
+            {% if section.settings.section_desc != blank %}
+                <div class="section-desc{% if section.settings.section_desc_style_class != blank %} {{ section.settings.section_desc_style_class }}{% endif %}">{{ section.settings.section_desc }}</div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="card-grid">
+            {% for block in section.blocks %}
+                {% assign card_seo_tag = block.settings.card_title_tag %}
+                {% assign card_style_class = block.settings.card_title_style_class %}
+                {% assign card_btn_style = block.settings.card_btn_style %}
+                {% assign icon_class = icon_position | replace: '_', '-' %}
+
+                <div class="pm-card card-direction-{{ card_direction }} icon-{{ icon_class }} card-align-{{ card_text_align }} text-position-{{ card_text_position }}">
+
+                    {% if block.settings.card_icon != blank %}
+                        <div class="card-icon">
+                            <img width="31" height="31" src="{{ block.settings.card_icon | image_picker_url: 'default' }}" alt="">
+                        </div>
+                    {% endif %}
+
+                    <div class="card-content">
+                        {% if block.settings.card_subtitle != blank %}
+                            <span class="card-subtitle">{{ block.settings.card_subtitle }}</span>
+                        {% endif %}
+
+                        {% if block.settings.card_title != blank %}
+                            <{{ card_seo_tag }} class="card-title{% if card_style_class != blank %} {{ card_style_class }}{% endif %}">{{ block.settings.card_title }}</{{ card_seo_tag }}>
+                        {% endif %}
+
+                        {% if block.settings.card_desc != blank %}
+                            <div class="card-desc">{{ block.settings.card_desc }}</div>
+                        {% endif %}
+                        
+                        {% comment %} === MODULE: PLATFORM BUTTONS === {% endcomment %}
+                        {% if block.settings.show_platforms %}
+                            <div class="platform-list">
+                                {% for i in (1..6) %}
+                                    {% assign logo_key = 'platform_' | append: i | append: '_logo' %}
+                                    {% assign url_key  = 'platform_' | append: i | append: '_url' %}
+                                    {% assign p_logo = block.settings[logo_key] %}
+                                    {% if p_logo != blank %}
+                                        <a href="{{ block.settings[url_key] }}" class="platform-btn">
+                                            <span class="platform-label">
+                                                {{ block.settings.platform_label }}
+                                                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z" fill="white"/></svg>
+                                            </span>
+                                            <img class="platform-logo-img" src="{{ p_logo | image_picker_url: 'default' }}" alt="" loading="lazy">
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% comment %} === MODULE: STEP FORM (Kajabi native) === {% endcomment %}
+                        {% if block.settings.show_form %}
+                            {% assign cf = current_site.find_form[block.settings.kajabi_form] %}
+                            {% if cf %}
+                                {% if block.settings.form_field_style == "label" %}
+                                    {% assign use_label = true %}{% assign use_placeholder = false %}
+                                {% else %}
+                                    {% assign use_label = false %}{% assign use_placeholder = true %}
+                                {% endif %}
+                                <div class="form-wrapper">
+                                    {% form cf %}
+                                        {% if block.settings.form_thank_you != blank %}
+                                            <input type="hidden" name="thank_you_url" value="{{ block.settings.form_thank_you }}">
+                                        {% endif %}
+                                        {% for field in cf.fields %}
+                                            {{ field | form_input: class: "form-group", input_class: "form-control", label: use_label, placeholder: use_placeholder }}
+                                        {% endfor %}
+                                        <button class="btn btn-primary" type="submit" role="button">{{ block.settings.form_submit_text }}</button>
+                                    {% endform %}
+                                    
+                                    <script>
+                                        (function() {
+                                            var scope = document.querySelector('.pm-card-grid-{{ section.id }}');
+                                            if (!scope) return;
+
+                                            function appendRequiredAsterisk() {
+                                                var requiredFields = scope.querySelectorAll('input[required], textarea[required], select[required], [aria-required="true"]');
+                                                requiredFields.forEach(function(input) {
+                                                    if (input.type === 'checkbox' || input.type === 'radio') return;
+                                                    {% if block.settings.form_field_style == "label" %}
+                                                        if (input.id) {
+                                                            var label = scope.querySelector('label[for="' + input.id + '"]');
+                                                            if (label && !label.querySelector('.req-star')) {
+                                                                label.innerHTML += '<span class="req-star">*</span>';
+                                                            }
+                                                        }
+                                                    {% else %}
+                                                        if (input.placeholder && !input.placeholder.includes('*')) {
+                                                            input.placeholder += ' *';
+                                                        }
+                                                    {% endif %}
+                                                });
+                                            }
+
+                                            {% if block.settings.form_terms_url != blank %}
+                                            function linkifyTerms() {
+                                                scope.querySelectorAll('.checkbox-field label .text').forEach(function(span) {
+                                                    if (span.querySelector('a')) return;
+                                                    var txt = span.textContent.trim();
+                                                    if (!txt) return;
+                                                    var a = document.createElement('a');
+                                                    a.href = "{{ block.settings.form_terms_url }}";
+                                                    a.target = "_blank";
+                                                    a.rel = "noopener";
+                                                    a.textContent = txt;
+                                                    a.style.textDecoration = "underline";
+                                                    a.style.color = "inherit";
+                                                    span.textContent = '';
+                                                    span.appendChild(a);
+                                                });
+                                            }
+                                            {% endif %}
+
+                                            function run() {
+                                                appendRequiredAsterisk();
+                                                {% if block.settings.form_terms_url != blank %}linkifyTerms();{% endif %}
+                                            }
+                                            run();
+                                            setTimeout(run, 500);
+                                        })();
+                                    </script>
+                                </div>
+                            {% else %}
+                                <p style="text-align:center; color:#FF4D4D; font-weight:bold;">Please select a Kajabi Form for this card.</p>
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% comment %} === MODULE: SOCIAL ICONS === {% endcomment %}
+                        {% if block.settings.show_social %}
+                            <div class="social-list">
+                                {% if block.settings.social_facebook != blank %}
+                                    <a href="{{ block.settings.social_facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+                                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_939_956)"> <path d="M32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 23.9859 5.85094 30.6053 13.5 31.8056V20.625H9.4375V16H13.5V12.475C13.5 8.465 15.8888 6.25 19.5434 6.25C21.2934 6.25 23.125 6.5625 23.125 6.5625V10.5H21.1075C19.12 10.5 18.5 11.7334 18.5 13V16H22.9375L22.2281 20.625H18.5V31.8056C26.1491 30.6053 32 23.9859 32 16Z" fill="#1877F2"/> <path d="M22.2281 20.625L22.9375 16H18.5V13C18.5 11.7347 19.12 10.5 21.1075 10.5H23.125V6.5625C23.125 6.5625 21.2941 6.25 19.5434 6.25C15.8888 6.25 13.5 8.465 13.5 12.475V16H9.4375V20.625H13.5V31.8056C15.1566 32.0648 16.8434 32.0648 18.5 31.8056V20.625H22.2281Z" fill="white"/> </g> <defs> <clipPath id="clip0_939_956"> <rect width="32" height="32" fill="white"/> </clipPath> </defs> </svg>
+                                    </a>
+                                {% endif %}
+                                {% if block.settings.social_linkedin != blank %}
+                                    <a href="{{ block.settings.social_linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_939_959)"> <path d="M29.6378 0H2.36222C1.73572 0 1.13488 0.248877 0.691879 0.691879C0.248877 1.13488 0 1.73572 0 2.36222V29.6378C0 30.2643 0.248877 30.8651 0.691879 31.3081C1.13488 31.7511 1.73572 32 2.36222 32H29.6378C30.2643 32 30.8651 31.7511 31.3081 31.3081C31.7511 30.8651 32 30.2643 32 29.6378V2.36222C32 1.73572 31.7511 1.13488 31.3081 0.691879C30.8651 0.248877 30.2643 0 29.6378 0ZM9.53778 27.26H4.72667V11.9778H9.53778V27.26ZM7.12889 9.86C6.58315 9.85693 6.05055 9.69226 5.59831 9.38678C5.14607 9.08131 4.79445 8.64871 4.58784 8.14359C4.38122 7.63846 4.32886 7.08346 4.43738 6.54861C4.54589 6.01376 4.8104 5.52304 5.19754 5.13838C5.58468 4.75372 6.07709 4.49236 6.61262 4.38728C7.14816 4.28221 7.70282 4.33812 8.2066 4.54798C8.71039 4.75784 9.14072 5.11222 9.44329 5.56642C9.74585 6.02061 9.9071 6.55426 9.90667 7.1C9.91182 7.46538 9.84335 7.82805 9.70535 8.16641C9.56735 8.50476 9.36264 8.81187 9.10343 9.06942C8.84421 9.32698 8.5358 9.52971 8.19657 9.66553C7.85733 9.80136 7.49423 9.86749 7.12889 9.86ZM27.2711 27.2733H22.4622V18.9244C22.4622 16.4622 21.4156 15.7022 20.0644 15.7022C18.6378 15.7022 17.2378 16.7778 17.2378 18.9867V27.2733H12.4267V11.9889H17.0533V14.1067H17.1156C17.58 13.1667 19.2067 11.56 21.6889 11.56C24.3733 11.56 27.2733 13.1533 27.2733 17.82L27.2711 27.2733Z" fill="#0A66C2"/> </g> <defs> <clipPath id="clip0_939_959"> <rect width="32" height="32" fill="white"/> </clipPath> </defs> </svg>
+                                    </a>
+                                {% endif %}
+                                {% if block.settings.social_instagram != blank %}
+                                    <a href="{{ block.settings.social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+                                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_964_1080)"><path d="M16 2.88125C20.275 2.88125 20.7813 2.9 22.4625 2.975C24.025 3.04375 24.8688 3.30625 25.4313 3.525C26.175 3.8125 26.7125 4.1625 27.2688 4.71875C27.8313 5.28125 28.175 5.8125 28.4625 6.55625C28.6813 7.11875 28.9438 7.96875 29.0125 9.525C29.0875 11.2125 29.1063 11.7188 29.1063 15.9875C29.1063 20.2625 29.0875 20.7688 29.0125 22.45C28.9438 24.0125 28.6813 24.8563 28.4625 25.4188C28.175 26.1625 27.825 26.7 27.2688 27.2563C26.7063 27.8188 26.175 28.1625 25.4313 28.45C24.8688 28.6688 24.0188 28.9312 22.4625 29C20.775 29.075 20.2688 29.0938 16 29.0938C11.725 29.0938 11.2188 29.075 9.5375 29C7.975 28.9312 7.13125 28.6688 6.56875 28.45C5.825 28.1625 5.2875 27.8125 4.73125 27.2563C4.16875 26.6938 3.825 26.1625 3.5375 25.4188C3.31875 24.8563 3.05625 24.0063 2.9875 22.45C2.9125 20.7625 2.89375 20.2563 2.89375 15.9875C2.89375 11.7125 2.9125 11.2062 2.9875 9.525C3.05625 7.9625 3.31875 7.11875 3.5375 6.55625C3.825 5.8125 4.175 5.275 4.73125 4.71875C5.29375 4.15625 5.825 3.8125 6.56875 3.525C7.13125 3.30625 7.98125 3.04375 9.5375 2.975C11.2188 2.9 11.725 2.88125 16 2.88125ZM16 0C11.6563 0 11.1125 0.01875 9.40625 0.09375C7.70625 0.16875 6.5375 0.44375 5.525 0.8375C4.46875 1.25 3.575 1.79375 2.6875 2.6875C1.79375 3.575 1.25 4.46875 0.8375 5.51875C0.44375 6.5375 0.16875 7.7 0.09375 9.4C0.01875 11.1125 0 11.6562 0 16C0 20.3438 0.01875 20.8875 0.09375 22.5938C0.16875 24.2938 0.44375 25.4625 0.8375 26.475C1.25 27.5312 1.79375 28.425 2.6875 29.3125C3.575 30.2 4.46875 30.75 5.51875 31.1562C6.5375 31.55 7.7 31.825 9.4 31.9C11.1063 31.975 11.65 31.9937 15.9938 31.9937C20.3375 31.9937 20.8813 31.975 22.5875 31.9C24.2875 31.825 25.4563 31.55 26.4688 31.1562C27.5188 30.75 28.4125 30.2 29.3 29.3125C30.1875 28.425 30.7375 27.5313 31.1438 26.4813C31.5375 25.4625 31.8125 24.3 31.8875 22.6C31.9625 20.8938 31.9813 20.35 31.9813 16.0063C31.9813 11.6625 31.9625 11.1188 31.8875 9.4125C31.8125 7.7125 31.5375 6.54375 31.1438 5.53125C30.75 4.46875 30.2063 3.575 29.3125 2.6875C28.425 1.8 27.5313 1.25 26.4813 0.84375C25.4625 0.45 24.3 0.175 22.6 0.1C20.8875 0.01875 20.3438 0 16 0Z" fill="black"/><path d="M16 7.78125C11.4625 7.78125 7.78125 11.4625 7.78125 16C7.78125 20.5375 11.4625 24.2188 16 24.2188C20.5375 24.2188 24.2188 20.5375 24.2188 16C24.2188 11.4625 20.5375 7.78125 16 7.78125ZM16 21.3312C13.0563 21.3312 10.6687 18.9438 10.6687 16C10.6687 13.0563 13.0563 10.6687 16 10.6687C18.9438 10.6687 21.3312 13.0563 21.3312 16C21.3312 18.9438 18.9438 21.3312 16 21.3312Z" fill="black"/><path d="M26.4625 7.45627C26.4625 8.51877 25.6 9.37502 24.5438 9.37502C23.4813 9.37502 22.625 8.51252 22.625 7.45627C22.625 6.39377 23.4875 5.53752 24.5438 5.53752C25.6 5.53752 26.4625 6.40002 26.4625 7.45627Z" fill="black"/></g><defs><clipPath id="clip0_964_1080"><rect width="32" height="32" fill="white"/></clipPath></defs></svg>
+                                    </a>
+                                {% endif %}
+                                {% if block.settings.social_email != blank %}
+                                    <a href="mailto:{{ block.settings.social_email }}" aria-label="Email">
+                                        <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.3335 5.3335L12.2201 12.9541C13.1016 13.5712 13.5424 13.8797 14.0218 13.9992C14.4454 14.1048 14.8883 14.1048 15.3118 13.9992C15.7913 13.8797 16.232 13.5712 17.1136 12.9541L28.0002 5.3335M7.7335 22.6668H21.6002C23.8404 22.6668 24.9605 22.6668 25.8161 22.2309C26.5688 21.8474 27.1807 21.2354 27.5642 20.4828C28.0002 19.6271 28.0002 18.507 28.0002 16.2668V7.7335C28.0002 5.49329 28.0002 4.37318 27.5642 3.51753C27.1807 2.76489 26.5688 2.15296 25.8161 1.76947C24.9605 1.3335 23.8404 1.3335 21.6002 1.3335H7.7335C5.49329 1.3335 4.37318 1.3335 3.51753 1.76947C2.76489 2.15296 2.15296 2.76489 1.76947 3.51753C1.3335 4.37318 1.3335 5.49329 1.3335 7.7335V16.2668C1.3335 18.507 1.3335 19.6271 1.76947 20.4828C2.15296 21.2354 2.76489 21.8474 3.51753 22.2309C4.37318 22.6668 5.49329 22.6668 7.7335 22.6668Z" stroke="black" stroke-width="2.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if block.settings.show_btn %}
+                        <div class="card-cta-wrap">
+                            <a href="{{ block.settings.btn_url }}" class="btn btn-{{ card_btn_style }}">{{ block.settings.btn_text }}</a>
+                            {% if block.settings.footer_note != blank %}
+                                <p class="button-footer-hint">{{ block.settings.footer_note }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% schema %}
+{
+  "name": "Card Grid - PM",
+  "elements": [
+    {
+      "type": "header",
+      "content": "Section Heading (Optional)"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Section Subtitle",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "section_title_tag",
+      "label": "Section Title HTML Tag (SEO)",
+      "default": "h2",
+      "options": [
+        { "label": "Heading 1 (H1)", "value": "h1" },
+        { "label": "Heading 2 (H2)", "value": "h2" },
+        { "label": "Heading 3 (H3)", "value": "h3" },
+        { "label": "Heading 4 (H4)", "value": "h4" },
+        { "label": "Paragraph (P)", "value": "p" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_title_style_class",
+      "label": "Section Title Visual Style",
+      "default": "",
+      "options": [
+        { "label": "Default (No Extra Class)", "value": "" },
+        { "label": "Heading 1 Style (.h1)", "value": "h1" },
+        { "label": "Heading 2 Style (.h2)", "value": "h2" },
+        { "label": "Heading 3 Style (.h3)", "value": "h3" },
+        { "label": "Heading 4 Style (.h4)", "value": "h4" },
+        { "label": "Text XL (.text-xl)", "value": "text-xl" },
+        { "label": "Text Large (.text-lg)", "value": "text-lg" },
+        { "label": "Text Medium (.text-md)", "value": "text-md" },
+        { "label": "Text Small (.text-sm)", "value": "text-sm" }
+      ]
+    },
+    {
+      "type": "rich_text",
+      "id": "section_desc",
+      "label": "Section Description",
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "section_desc_style_class",
+      "label": "Section Description Visual Style",
+      "info": "Optional class for description text size. Leave Default to use global styles.",
+      "default": "",
+      "options": [
+        { "label": "Default (No Extra Class)", "value": "" },
+        { "label": "Text XL (.text-xl)", "value": "text-xl" },
+        { "label": "Text Large (.text-lg)", "value": "text-lg" },
+        { "label": "Text Medium (.text-md)", "value": "text-md" },
+        { "label": "Text Small (.text-sm)", "value": "text-sm" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Section Heading Alignment",
+      "info": "Alignment for the section subtitle, title, and description above the cards.",
+      "default": "left",
+      "options": [
+        { "label": "Left", "value": "left" },
+        { "label": "Center", "value": "center" },
+        { "label": "Right", "value": "right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "header",
+      "content": "Grid Layout",
+      "style": "subheading"
+    },
+    {
+      "type": "text",
+      "id": "rows",
+      "label": "Number of Rows",
+      "info": "Columns auto-calculated based on number of cards added.",
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "gap_row",
+      "label": "Row Gap (px)",
+      "default": "32"
+    },
+    {
+      "type": "text",
+      "id": "gap_col",
+      "label": "Column Gap (px)",
+      "default": "32"
+    },
+    {
+      "type": "select",
+      "id": "card_direction",
+      "label": "Card Layout Direction",
+      "info": "Row = icon left, text right (horizontal). Column = icon top, text below (vertical).",
+      "default": "column",
+      "options": [
+        { "label": "Column (Icon Top, Text Below)", "value": "column" },
+        { "label": "Row (Icon Left, Text Right)", "value": "row" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "card_height",
+      "label": "Card Height",
+      "info": "Equal = all cards match the tallest card in their row. Fit Content = each card's height follows its own content.",
+      "default": "equal",
+      "options": [
+        { "label": "Equal Height", "value": "equal" },
+        { "label": "Fit Content", "value": "content" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Card Icon Position",
+      "info": "Middle Top Floating only applies when Card Layout Direction = Column.",
+      "default": "left_top",
+      "options": [
+        { "label": "Left Top", "value": "left_top" },
+        { "label": "Middle Top Floating", "value": "middle_top_floating" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "card_text_position",
+      "label": "Card Text Position",
+      "info": "Normal = text flows from top. Bottom = text anchors to the bottom of the card. Only applies when Direction = Column.",
+      "default": "normal",
+      "options": [
+        { "label": "Normal (Top)", "value": "normal" },
+        { "label": "Bottom", "value": "bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "card_text_align",
+      "label": "Card Text Alignment",
+      "info": "Alignment for content inside each card.",
+      "default": "left",
+      "options": [
+        { "label": "Left", "value": "left" },
+        { "label": "Center", "value": "center" },
+        { "label": "Right", "value": "right" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "card_title_mb",
+      "label": "Card Title Spacing Bottom (px)",
+      "info": "Space below the card title. Leave blank to use the default from your global styles.",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "card_content_max_width",
+      "label": "Card Content Max Width (px)",
+      "info": "Limits the width of card content. Leave blank for no limit. Only applies when Direction = Column.",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Card Styling",
+      "style": "subheading"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "text",
+      "id": "card_padding",
+      "label": "Card Padding (px)",
+      "default": "32"
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card Title Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "card_subtitle_color",
+      "label": "Card Subtitle Color",
+      "default": "#19887D"
+    },
+    {
+      "type": "color",
+      "id": "platform_bg_color",
+      "label": "Platform Button Background",
+      "default": "#292524"
+    },
+    {
+      "type": "header",
+      "content": "Section Background & Heading Colors",
+      "style": "subheading"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "section_title_color",
+      "label": "Section Title Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "section_desc_color",
+      "label": "Section Description Color",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "overline_color",
+      "label": "Section Subtitle Color",
+      "default": "#19887D"
+    },
+    {
+      "type": "header",
+      "content": "Spacing",
+      "style": "subheading"
+    },
+    {
+      "type": "select",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "default": "none",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "default": "xl",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": "none",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": "none",
+      "options": [
+        { "label": "None", "value": "none" },
+        { "label": "Small", "value": "small" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Large", "value": "large" },
+        { "label": "XL", "value": "xl" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Advanced",
+      "style": "subheading"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS Class",
+      "info": "Add your own class(es) to the section wrapper. Space-separated.",
+      "default": ""
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "elements": [
+        { "type": "header", "content": "Card Icon" },
+        { "type": "image_picker", "id": "card_icon", "label": "Upload Icon (SVG or PNG)" },
+        { "type": "header", "content": "Card Subtitle" },
+        { "type": "text", "id": "card_subtitle", "label": "Subtitle Text", "default": "" },
+        { "type": "header", "content": "Card Title" },
+        { "type": "text", "id": "card_title", "label": "Title", "default": "" },
+        { "type": "select", "id": "card_title_tag", "label": "Title HTML Tag (SEO)", "default": "h3", "options": [
+            { "label": "Heading 1 (H1)", "value": "h1" },
+            { "label": "Heading 2 (H2)", "value": "h2" },
+            { "label": "Heading 3 (H3)", "value": "h3" },
+            { "label": "Heading 4 (H4)", "value": "h4" },
+            { "label": "Paragraph (P)", "value": "p" }
+        ]},
+        { "type": "select", "id": "card_title_style_class", "label": "Title Visual Style", "default": "", "options": [
+            { "label": "Default (No Extra Class)", "value": "" },
+            { "label": "Heading 1 Style (.h1)", "value": "h1" },
+            { "label": "Heading 2 Style (.h2)", "value": "h2" },
+            { "label": "Heading 3 Style (.h3)", "value": "h3" },
+            { "label": "Heading 4 Style (.h4)", "value": "h4" },
+            { "label": "Text XL (.text-xl)", "value": "text-xl" },
+            { "label": "Text Large (.text-lg)", "value": "text-lg" },
+            { "label": "Text Medium (.text-md)", "value": "text-md" },
+            { "label": "Text Small (.text-sm)", "value": "text-sm" }
+        ]},
+        { "type": "header", "content": "Card Description" },
+        { "type": "rich_text", "id": "card_desc", "label": "Description", "default": "" },
+        { "type": "header", "content": "Module: Platform Buttons" },
+        { "type": "checkbox", "id": "show_platforms", "label": "Show Platform Buttons?", "default": "false" },
+        { "type": "text", "id": "platform_label", "label": "Button Label", "default": "Available at" },
+        { "type": "image_picker", "id": "platform_1_logo", "label": "Platform 1 Logo" },
+        { "type": "text", "id": "platform_1_url", "label": "Platform 1 URL", "default": "#" },
+        { "type": "image_picker", "id": "platform_2_logo", "label": "Platform 2 Logo" },
+        { "type": "text", "id": "platform_2_url", "label": "Platform 2 URL", "default": "#" },
+        { "type": "image_picker", "id": "platform_3_logo", "label": "Platform 3 Logo" },
+        { "type": "text", "id": "platform_3_url", "label": "Platform 3 URL", "default": "#" },
+        { "type": "image_picker", "id": "platform_4_logo", "label": "Platform 4 Logo" },
+        { "type": "text", "id": "platform_4_url", "label": "Platform 4 URL", "default": "#" },
+        { "type": "image_picker", "id": "platform_5_logo", "label": "Platform 5 Logo" },
+        { "type": "text", "id": "platform_5_url", "label": "Platform 5 URL", "default": "#" },
+        { "type": "image_picker", "id": "platform_6_logo", "label": "Platform 6 Logo" },
+        { "type": "text", "id": "platform_6_url", "label": "Platform 6 URL", "default": "#" },
+        
+        { "type": "header", "content": "Module: Step Form" },
+        { "type": "checkbox", "id": "show_form", "label": "Show Form?", "default": "false" },
+        { "type": "form", "id": "kajabi_form", "label": "Select Kajabi Form" },
+        { "type": "select", "id": "form_field_style", "label": "Form Field Style", "default": "label", "options": [
+            { "label": "Labels Above Fields", "value": "label" },
+            { "label": "Placeholders Inside Fields", "value": "placeholder" }
+        ]},
+        { "type": "text", "id": "form_submit_text", "label": "Submit Button Text", "default": "Claim Betsy's Paid Substack for free" },
+        { "type": "text", "id": "form_thank_you", "label": "Thank You Page URL", "info": "Leave blank to use the default." },
+        { "type": "text", "id": "form_terms_url", "label": "Terms of Use Link URL", "info": "If filled, the checkbox label text becomes a clickable link (opens in a new tab)." },
+        
+        { "type": "header", "content": "Module: Social Icons" },
+        { "type": "checkbox", "id": "show_social", "label": "Show Social Icons?", "default": "false" },
+        { "type": "text", "id": "social_facebook", "label": "Facebook URL", "default": "" },
+        { "type": "text", "id": "social_linkedin", "label": "LinkedIn URL", "default": "" },
+        { "type": "text", "id": "social_instagram", "label": "Instagram URL", "default": "" },
+        { "type": "text", "id": "social_email", "label": "Email Address", "default": "" },
+        { "type": "header", "content": "Card Button" },
+        { "type": "checkbox", "id": "show_btn", "label": "Show Button?", "default": "false" },
+        { "type": "text", "id": "btn_text", "label": "Button Text", "default": "Learn More" },
+        { "type": "text", "id": "btn_url", "label": "Button Link", "default": "#" },
+        { "type": "select", "id": "card_btn_style", "label": "Button Style", "default": "primary", "options": [
+            { "label": "Primary", "value": "primary" },
+            { "label": "Secondary", "value": "secondary" }
+        ]},
+        { "type": "text", "id": "footer_note", "label": "Footer Note (Below Button)", "default": "" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Card Grid - PM",
+      "description": "Card grid for features, services, or comparisons.",
+      "category": "CUSTOM",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

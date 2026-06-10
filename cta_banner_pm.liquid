@@ -1,608 +1,234 @@
-<!-- Start Version 1.10.0 -->
+<!-- Version 1.3.1 -->
 {% assign spacing_classes = '' %}
 {% if section.settings.margin_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mt-' | append: section.settings.margin_top %}{% endif %}
 {% if section.settings.margin_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mb-' | append: section.settings.margin_bottom %}{% endif %}
 {% if section.settings.padding_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pt-' | append: section.settings.padding_top %}{% endif %}
 {% if section.settings.padding_bottom != 'none' %}{% assign spacing_classes = spacing_classes | append: ' pb-' | append: section.settings.padding_bottom %}{% endif %}
 
+{% assign layout = section.settings.content_layout %}
+
 <style>
-    #section-header header.header {
-        background: #FFF9EB;
-        backdrop-filter: unset;
-    }
-    
     /* === SCOPED CSS === */
-    .pm-book-promo-{{ section.id }} {
-        position: relative;
-        z-index: 1;
+    .pm-cta-banner-{{ section.id }} {
+        background-color: {{ section.settings.bg_color }};
         box-sizing: border-box;
     }
 
-    .pm-book-promo-{{ section.id }} * {
+    .pm-cta-banner-{{ section.id }} * {
         box-sizing: border-box;
     }
 
-    .pm-book-promo-{{ section.id }} .container {
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0;
-    }
-
-    /* === SHOWCASE GRID === */
-    .pm-book-promo-{{ section.id }} .showcase-wrapper {
-        width: 100%;
-        background-color: #FFF9EB;
-        padding-block: 136px 114px;
-        margin-bottom: 104px;
-    }
-    
-    .pm-book-promo-{{ section.id }} .showcase-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 200px;
-        width: 100%;
+    .pm-cta-banner-{{ section.id }} .container {
         max-width: 1280px;
-        margin-inline: auto;
+        margin: 0 auto;
+        padding: 0 32px;
+    }
+
+    /* === IMAGE AREA === */
+    .pm-cta-banner-{{ section.id }} .image-wrap {
+        margin-bottom: 64px;
+        border-radius: 12px;
+        overflow: hidden;  
+    }
+
+    .pm-cta-banner-{{ section.id }} .banner-img {
+        width: 100%;
+        height: 100%;
+        min-height: 300px;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* === TYPOGRAPHY === */
+    .pm-cta-banner-{{ section.id }} .dynamic-title {
+        color: {{ section.settings.heading_color }};
+        margin: 0 0 16px;
+    }
+
+    .pm-cta-banner-{{ section.id }} .subheading-text {
+        color: {{ section.settings.subheading_color }};
+        font-family: var(--pm-font-heading);
+        font-size: 16px;
+        line-height: 1.4;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .pm-cta-banner-{{ section.id }} .desc-text {
+        color: {{ section.settings.text_color }};
+        font-family: var(--pm-font-heading);
+        font-size: 16px;
+        line-height: 1.4;
+        margin: 0 0 32px;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text > *:first-child {
+        margin-top: 0;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text > *:last-child {
+        margin-bottom: 0;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text p {
+        margin: 0 0 16px;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text p:has(+ ul) {
+        margin: 0 0 6px;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text strong,
+    .pm-cta-banner-{{ section.id }} .desc-text b {
+        color: {{ section.settings.heading_color }};
+        font-weight: 700;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text ul,
+    .pm-cta-banner-{{ section.id }} .desc-text ol {
+        margin: 0 0 16px;
+        padding-left: 10px;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text ul li,
+    .pm-cta-banner-{{ section.id }} .desc-text ol li {
+        margin-bottom: 0;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text ul li::marker {
+        content: none;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text ul li::before {
+        content: "•";
+        font-size: 15px;
+        margin-right: 10px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .pm-cta-banner-{{ section.id }} .desc-text a {
+        color: var(--pm-primary);
+        text-decoration: underline;
+    }
+
+    /* === BUTTON GROUP === */
+    .pm-cta-banner-{{ section.id }} .btn-group {
+        display: flex;
+        align-items: center;
+        gap: 33px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    /* === LAYOUT: CENTERED (default) === */
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-centered {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-centered .subheading-text {
+        margin: 0 0 16px;
+    }
+
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-centered .btn-group {
+        justify-content: center;
+    }
+
+    /* === LAYOUT: SPLIT 40/60 === */
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-split {
+        display: grid;
+        grid-template-columns: 500px 1fr;
+        gap: 64px;
+        align-items: start;
+    }
+
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-split .split-left {
+        text-align: left;
         position: relative;
     }
 
-    .pm-book-promo-{{ section.id }} .book-img-wrap {
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-split .split-right {
+        text-align: left;
+    }
+
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-split .btn-group {
+        justify-content: flex-start;
+    }
+    
+    .pm-cta-banner-{{ section.id }} .content-wrap.layout-split .btn-group .btn {
+        margin: 0;
+    }
+    
+    .pm-cta-banner-{{ section.id }}.banner-order .split-left::after {
+        content: "";
         position: absolute;
-        left: 50%;
-        top: -84px;
-        transform: translateX(-50%);
-        z-index: 2;
-    }
-
-    .pm-book-promo-{{ section.id }} .book-img {
-        max-width: 400px;
+        top: 92%;
+        left: 64%;
         width: 100%;
-    }
-
-    /* === SIDE REVIEWS === */
-    .pm-book-promo-{{ section.id }} .side-review {
-        text-align: center;
-        max-width: 280px;
-        margin: 0 auto;
-    }
-
-    .pm-book-promo-{{ section.id }} .side-review > svg {
-        margin-bottom: 4px;
-    }
-
-    .pm-book-promo-{{ section.id }} .review-text {
-        font-family: var(--pm-font-heading);
-        font-size: 16px;
-        color: {{ section.settings.review_text_color }};
-        line-height: 1.4em;
-        margin-bottom: 12px;
-    }
-
-    .pm-book-promo-{{ section.id }} .review-author-info {
-        width: 100%;
-        max-width: 216px;
-        margin-inline: auto;
-    }
-    
-    .pm-book-promo-{{ section.id }} .review-author {
-        font-family: var(--pm-font-body);
-        font-size: 13px;
-        font-weight: 400;
-        line-height: 1.4em;
-        color: {{ section.settings.heading_color }};
-        margin: 0;
-    }
-
-    .pm-book-promo-{{ section.id }} .review-source {
-        font-family: var(--pm-font-body);
-        font-size: 12px;
-        line-height: 1.4em;
-        font-weight: 400;
-        color: {{ section.settings.source_color }};
-        margin: 0;
-    }
-
-    /* === MAIN CONTENT AREA === */
-    .pm-book-promo-{{ section.id }} .main-content {
-        max-width: 880px;
-        margin: 0 auto;
-        text-align: center;
-    }
-
-    /* Group 1: Rating Line */
-    .pm-book-promo-{{ section.id }} .content-group-rating {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 7px;
-        margin-bottom: 12px;
-    }
-
-    .pm-book-promo-{{ section.id }} .rating-text-wrap {
-        display: flex;
-        align-items: end;
-        justify-content: center;
-        gap: 7px;
-    }
-
-    .pm-book-promo-{{ section.id }} .main-rating-text {
-        font-family: var(--pm-font-heading);
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.4;
-        color: {{ section.settings.text_color }};
-        margin: 0;
-        padding-bottom: 4px;
-    }
-
-    .pm-book-promo-{{ section.id }} .platform-logo {
-        height: 18px;
-        width: auto;
-        display: block;
-    }
-
-    /* Group 2: Title & Description */
-    .pm-book-promo-{{ section.id }} .content-group-text {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        margin-bottom: 32px;
-    }
-
-    .pm-book-promo-{{ section.id }} .dynamic-title {
-        color: {{ section.settings.heading_color }};
-        margin: 0 auto;
-        width: 100%;
-        max-width: 600px;
-    }
-
-    .pm-book-promo-{{ section.id }} .desc-text {
-        font-family: var(--pm-font-heading);
-        font-size: 18px;
-        color: #484848;
-        line-height: 1.4;
-        margin: 0;
-        font-weight: 400;
-        width: 100%;
-        max-width: 435px;
-        margin-inline: auto;
-    }
-
-    /* Group 3: CTA & Highlight */
-    .pm-book-promo-{{ section.id }} .content-group-cta {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        /* gap: 20px; */
-    }
-
-    .pm-book-promo-{{ section.id }} .highlight-text {
-        font-family: var(--pm-font-heading);
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 1.4;
-        color: {{ section.settings.highlight_color }};
-        margin: 0;
-        width: 100%;
-        max-width: 280px;
-        margin-inline: auto;
-    }
-    
-    .pm-book-promo-{{ section.id }} .highlight-text + .btn {
-        margin: 0;
-    }
-    
-    .pm-book-promo-{{ section.id }} .cta-buttons-wrap {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 33px;
-    }
-    
-    .pm-book-promo-{{ section.id }} .cta-buttons-wrap .btn {
-        margin: 0;
-    }
-    
-    @media (max-width: 1440px) {
-        .pm-book-promo-{{ section.id }} .main-wrapper,
-        .pm-book-promo-{{ section.id }} .showcase-wrapper {
-            padding-inline: 32px;
-        }
+        max-width: 154px;
+        height: 74px;
+        background-image: url("data:image/svg+xml,%3Csvg width='154' height='74' viewBox='0 0 154 74' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.825899 1.61525C0.384303 1.62956 0.0147176 1.28318 0.000407479 0.841585C-0.0139027 0.399989 0.332481 0.0304037 0.774077 0.0160935L0.799988 0.815674L0.825899 1.61525ZM151.956 51.8923C152.361 51.7148 152.833 51.8989 153.01 52.3035C153.188 52.7081 153.004 53.18 152.599 53.3575L152.278 52.6249L151.956 51.8923ZM132.784 49.3287C132.347 49.264 132.045 48.8572 132.11 48.4201C132.175 47.9831 132.581 47.6812 133.018 47.746L132.901 48.5374L132.784 49.3287ZM145.288 70.9141C144.922 71.1615 144.425 71.0653 144.177 70.6993C143.93 70.3333 144.026 69.8359 144.392 69.5885L144.84 70.2513L145.288 70.9141ZM0.799988 0.815674C0.774077 0.0160935 0.774379 0.0160838 0.774799 0.0160703C0.775098 0.0160608 0.775637 0.0160436 0.776234 0.0160248C0.777427 0.0159872 0.779095 0.0159353 0.781233 0.0158699C0.78551 0.0157392 0.791669 0.0155548 0.799687 0.0153247C0.815724 0.0148644 0.839195 0.0142207 0.869908 0.0134557C0.931333 0.0119256 1.02173 0.00991039 1.13953 0.00790676C1.37514 0.00389955 1.72043 -6.20955e-05 2.16298 -1.04454e-06C3.04797 0.000121143 4.32239 0.0163309 5.88655 0.0804953C9.01338 0.208762 13.3056 0.528958 17.9635 1.29774C27.22 2.82553 38.1588 6.1612 44.1003 13.5168L43.4779 14.0195L42.8556 14.5222C37.3151 7.66308 26.9149 4.39682 17.7029 2.87638C13.1266 2.12105 8.90221 1.80555 5.82098 1.67915C4.28111 1.61598 3.02864 1.60012 2.16276 1.6C1.72986 1.59994 1.39372 1.60382 1.16674 1.60768C1.05326 1.60961 0.967077 1.61153 0.909749 1.61296C0.881086 1.61367 0.859637 1.61426 0.845597 1.61467C0.838577 1.61487 0.833409 1.61502 0.830118 1.61512C0.828473 1.61517 0.827296 1.61521 0.826592 1.61523C0.82624 1.61524 0.826067 1.61525 0.82589 1.61525C0.825835 1.61526 0.825899 1.61525 0.799988 0.815674ZM43.4779 14.0195L44.1003 13.5168C50.0683 20.9053 49.4871 29.9378 48.896 38.5005C48.2958 47.195 47.6941 55.3788 52.9284 61.859L52.3061 62.3616L51.6838 62.8643C45.9851 55.8093 46.7103 46.9294 47.2998 38.3903C47.8983 29.7195 48.3695 21.3485 42.8556 14.5222L43.4779 14.0195ZM52.3061 62.3616L52.9284 61.859C58.1624 68.3386 68.2523 72.2896 84.4656 71.3702C100.665 70.4517 122.826 64.6731 151.956 51.8923L152.278 52.6249L152.599 53.3575C123.381 66.1767 101.022 72.034 84.5562 72.9677C68.1042 73.9005 57.3829 69.9199 51.6838 62.8643L52.3061 62.3616ZM132.901 48.5374C133.018 47.746 133.018 47.746 133.019 47.746C133.019 47.746 133.019 47.7461 133.019 47.7461C133.02 47.7462 133.021 47.7463 133.022 47.7465C133.024 47.7468 133.027 47.7473 133.032 47.748C133.041 47.7493 133.054 47.7512 133.071 47.7538C133.106 47.7589 133.157 47.7665 133.224 47.7765C133.358 47.7965 133.554 47.8258 133.805 47.8633C134.307 47.9384 135.025 48.0464 135.893 48.178C137.628 48.4411 139.961 48.7989 142.35 49.1773C144.738 49.5556 147.186 49.9549 149.15 50.3011C150.131 50.4741 150.997 50.6346 151.675 50.7731C152.329 50.9067 152.871 51.0316 153.162 51.1383L152.885 51.8892L152.609 52.64C152.454 52.5829 152.037 52.4801 151.355 52.3408C150.697 52.2064 149.848 52.0488 148.872 51.8768C146.922 51.533 144.485 51.1354 142.1 50.7576C139.716 50.38 137.386 50.0227 135.653 49.7599C134.787 49.6284 134.069 49.5206 133.568 49.4457C133.318 49.4082 133.122 49.379 132.988 49.3591C132.921 49.3491 132.87 49.3415 132.836 49.3364C132.819 49.3339 132.806 49.332 132.797 49.3307C132.793 49.33 132.789 49.3295 132.787 49.3292C132.786 49.329 132.785 49.3289 132.785 49.3288C132.784 49.3288 132.784 49.3288 132.784 49.3288C132.784 49.3287 132.784 49.3287 132.901 48.5374ZM152.885 51.8892L153.162 51.1383C153.632 51.3113 153.818 51.7236 153.885 52.0162C153.95 52.3057 153.939 52.625 153.904 52.9214C153.832 53.5267 153.623 54.3004 153.339 55.153C152.764 56.8734 151.821 59.0904 150.788 61.2955C149.753 63.5049 148.615 65.726 147.645 67.4601C147.16 68.3261 146.712 69.0798 146.335 69.653C146.147 69.939 145.97 70.1899 145.811 70.391C145.667 70.5724 145.487 70.7798 145.288 70.9141L144.84 70.2513L144.392 69.5885C144.371 69.6028 144.422 69.5668 144.557 69.3971C144.676 69.2471 144.824 69.0391 144.998 68.774C145.346 68.2452 145.773 67.5279 146.249 66.6786C147.198 64.9823 148.318 62.7958 149.339 60.6165C150.362 58.433 151.276 56.2805 151.821 54.6465C152.096 53.8219 152.263 53.1723 152.315 52.7325C152.342 52.5064 152.33 52.3978 152.324 52.3694C152.318 52.3443 152.362 52.549 152.609 52.64L152.885 51.8892Z' fill='%2319887D'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: contain;
     }
 
     /* === RESPONSIVE === */
-    @media (max-width: 1024px) {
-        .pm-book-promo-{{ section.id }} .side-review {
-            display: none;
+    @media screen and (max-width: 1024px) {
+        .pm-cta-banner-{{ section.id }} .image-wrap {
+            margin-bottom: 32px;
         }
         
-        .pm-book-promo-{{ section.id }} .showcase-wrapper {
-            padding-block: 128px 280px;
+        .pm-cta-banner-{{ section.id }} .content-wrap.layout-split {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
-        .pm-book-promo-{{ section.id }} .content-group-text {
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        
-        .pm-book-promo-{{ section.id }} .dynamic-title {
-            max-width: 540px;
-        }
-        
-        .pm-book-promo-{{ section.id }} .book-img {
-            width: 340px;
-        }
-        
-        .pm-book-promo-{{ section.id }} .cta-buttons-wrap {
-            flex-direction: column;
-            gap: 12px;
+        .pm-cta-banner-{{ section.id }}.banner-order .split-left::after {
+            content: none;
         }
     }
     
-    @media (max-width: 600px) {
-        .pm-book-promo-{{ section.id }} .main-wrapper,
-        .pm-book-promo-{{ section.id }} .showcase-wrapper {
+    @media screen and (max-width: 600px) {
+        .pm-cta-banner-{{ section.id }} .container {
             padding-inline: 16px;
         }
         
-        .pm-book-promo-{{ section.id }} .showcase-wrapper {
-            padding-block: 32px 410px;
-            margin-bottom: 40px;
+        .pm-cta-banner-{{ section.id }} .banner-img {
+            min-height: 160px;
         }
         
-        .pm-book-promo-{{ section.id }} .showcase-grid {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-        }
-        
-        .pm-book-promo-{{ section.id }} .book-img-wrap {
-            left: auto;
-            top: 12px;
-            transform: none;
-        }
-        
-        .pm-book-promo-{{ section.id }} .book-img {
-            width: 100%;
-            max-width: 336px;
-        }
-        
-        .pm-book-promo-{{ section.id }} .dynamic-title {
-            max-width: 320px;
+        .pm-cta-banner-{{ section.id }} .btn-group {
+            flex-direction: column;
+            align-items: start;
+            gap: 12px
         }
     }
 </style>
 
-<div class="pm-book-promo-{{ section.id }}{{ spacing_classes }}{% if section.settings.custom_class != blank %} {{ section.settings.custom_class }}{% endif %}">
+<div class="pm-cta-banner-{{ section.id }}{{ spacing_classes }}{% if section.settings.custom_class != blank %} {{ section.settings.custom_class }}{% endif %}">
     <div class="container">
 
-        <div class="showcase-wrapper">
-        
-            <div class="showcase-grid">
-                <div class="side-review">
-                    {% if section.settings.left_review_text != blank %}
-                        <svg width="116" height="20" viewBox="0 0 116 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_349_1212)">
-                            <path
-                              d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip1_349_1212)">
-                              <path
-                                d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip2_349_1212)">
-                            <path
-                              d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip3_349_1212)">
-                              <path
-                                d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip4_349_1212)">
-                            <path
-                              d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip5_349_1212)">
-                              <path
-                                d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip6_349_1212)">
-                            <path
-                              d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip7_349_1212)">
-                              <path
-                                d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip8_349_1212)">
-                            <path
-                              d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip9_349_1212)">
-                              <path
-                                d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip1_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip2_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip3_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip4_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip5_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip6_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip7_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip8_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                            <clipPath id="clip9_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                        <p class="review-text">{{ section.settings.left_review_text | newline_to_br }}</p>
-                        <div class="review-author-info">
-                            <p class="review-author">{{ section.settings.left_review_author }}</p>
-                            <p class="review-source">{{ section.settings.left_review_source }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="book-img-wrap">
-                    {% if section.settings.book_img != blank %}
-                        <img src="{{ section.settings.book_img | image_picker_url: 'default' }}" alt="{{ section.settings.book_img_alt | escape }}" width="396" height="534" class="book-img" fetchpriority="high">
-                    {% else %}
-                        <div style="width: 300px; height: 400px; background: #eee; display: flex; align-items: center; justify-content: center; margin: 0 auto;">Upload Book Image</div>
-                    {% endif %}
-                </div>
-
-                <div class="side-review">
-                    {% if section.settings.right_review_text != blank %}
-                        <svg width="116" height="20" viewBox="0 0 116 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_349_1212)">
-                            <path
-                              d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip1_349_1212)">
-                              <path
-                                d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip2_349_1212)">
-                            <path
-                              d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip3_349_1212)">
-                              <path
-                                d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip4_349_1212)">
-                            <path
-                              d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip5_349_1212)">
-                              <path
-                                d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip6_349_1212)">
-                            <path
-                              d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip7_349_1212)">
-                              <path
-                                d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip8_349_1212)">
-                            <path
-                              d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip9_349_1212)">
-                              <path
-                                d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip1_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip2_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip3_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip4_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip5_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip6_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip7_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip8_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                            <clipPath id="clip9_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                        <p class="review-text">{{ section.settings.right_review_text | newline_to_br }}</p>
-                        <div class="review-author-info">
-                            <p class="review-author">{{ section.settings.right_review_author }}</p>
-                            <p class="review-source">{{ section.settings.right_review_source }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            
+        {% if section.settings.banner_img != blank %}
+        <div class="image-wrap">
+            <img src="{{ section.settings.banner_img | image_picker_url: 'default' }}" alt="{{ section.settings.img_alt | escape }}" class="banner-img"loading="lazy">
         </div>
+        {% endif %}
 
+        {% assign sec_tag = section.settings.section_title_tag %}
+        {% assign sec_style = section.settings.section_title_style_class %}
 
-        <div class="main-wrapper">
-        
-            <div class="main-content">
-                <div class="content-group-rating">
-                    {% if section.settings.main_rating_text != blank %}
-                        <svg width="116" height="20" viewBox="0 0 116 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_349_1212)">
-                            <path
-                              d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip1_349_1212)">
-                              <path
-                                d="M9.53834 1.60996C9.70914 1.19932 10.2909 1.19932 10.4617 1.60996L12.5278 6.57744C12.5998 6.75056 12.7626 6.86885 12.9495 6.88383L18.3123 7.31376C18.7556 7.3493 18.9354 7.90256 18.5976 8.19189L14.5117 11.6919C14.3693 11.8139 14.3071 12.0053 14.3506 12.1876L15.5989 17.4208C15.7021 17.8534 15.2315 18.1954 14.8519 17.9635L10.2606 15.1592C10.1006 15.0615 9.89938 15.0615 9.73937 15.1592L5.14806 17.9635C4.76851 18.1954 4.29788 17.8534 4.40108 17.4208L5.64939 12.1876C5.69289 12.0053 5.6307 11.8139 5.48831 11.6919L1.40241 8.19189C1.06464 7.90256 1.24441 7.3493 1.68773 7.31376L7.05054 6.88383C7.23744 6.86885 7.40024 6.75056 7.47225 6.57744L9.53834 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip2_349_1212)">
-                            <path
-                              d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip3_349_1212)">
-                              <path
-                                d="M33.5383 1.60996C33.7091 1.19932 34.2909 1.19932 34.4617 1.60996L36.5278 6.57744C36.5998 6.75056 36.7626 6.86885 36.9495 6.88383L42.3123 7.31376C42.7556 7.3493 42.9354 7.90256 42.5976 8.19189L38.5117 11.6919C38.3693 11.8139 38.3071 12.0053 38.3506 12.1876L39.5989 17.4208C39.7021 17.8534 39.2315 18.1954 38.8519 17.9635L34.2606 15.1592C34.1006 15.0615 33.8994 15.0615 33.7394 15.1592L29.1481 17.9635C28.7685 18.1954 28.2979 17.8534 28.4011 17.4208L29.6494 12.1876C29.6929 12.0053 29.6307 11.8139 29.4883 11.6919L25.4024 8.19189C25.0646 7.90256 25.2444 7.3493 25.6877 7.31376L31.0505 6.88383C31.2374 6.86885 31.4002 6.75056 31.4722 6.57744L33.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip4_349_1212)">
-                            <path
-                              d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip5_349_1212)">
-                              <path
-                                d="M57.5383 1.60996C57.7091 1.19932 58.2909 1.19932 58.4617 1.60996L60.5278 6.57744C60.5998 6.75056 60.7626 6.86885 60.9495 6.88383L66.3123 7.31376C66.7556 7.3493 66.9354 7.90256 66.5976 8.19189L62.5117 11.6919C62.3693 11.8139 62.3071 12.0053 62.3506 12.1876L63.5989 17.4208C63.7021 17.8534 63.2315 18.1954 62.8519 17.9635L58.2606 15.1592C58.1006 15.0615 57.8994 15.0615 57.7394 15.1592L53.1481 17.9635C52.7685 18.1954 52.2979 17.8534 52.4011 17.4208L53.6494 12.1876C53.6929 12.0053 53.6307 11.8139 53.4883 11.6919L49.4024 8.19189C49.0646 7.90256 49.2444 7.3493 49.6877 7.31376L55.0505 6.88383C55.2374 6.86885 55.4002 6.75056 55.4722 6.57744L57.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip6_349_1212)">
-                            <path
-                              d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip7_349_1212)">
-                              <path
-                                d="M81.5383 1.60996C81.7091 1.19932 82.2909 1.19932 82.4617 1.60996L84.5278 6.57744C84.5998 6.75056 84.7626 6.86885 84.9495 6.88383L90.3123 7.31376C90.7556 7.3493 90.9354 7.90256 90.5976 8.19189L86.5117 11.6919C86.3693 11.8139 86.3071 12.0053 86.3506 12.1876L87.5989 17.4208C87.7021 17.8534 87.2315 18.1954 86.8519 17.9635L82.2606 15.1592C82.1006 15.0615 81.8994 15.0615 81.7394 15.1592L77.1481 17.9635C76.7685 18.1954 76.2979 17.8534 76.4011 17.4208L77.6494 12.1876C77.6929 12.0053 77.6307 11.8139 77.4883 11.6919L73.4024 8.19189C73.0646 7.90256 73.2444 7.3493 73.6877 7.31376L79.0505 6.88383C79.2374 6.86885 79.4002 6.75056 79.4722 6.57744L81.5383 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <g clip-path="url(#clip8_349_1212)">
-                            <path
-                              d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                              fill="#F5F5F5" />
-                            <g clip-path="url(#clip9_349_1212)">
-                              <path
-                                d="M105.538 1.60996C105.709 1.19932 106.291 1.19932 106.462 1.60996L108.528 6.57744C108.6 6.75056 108.763 6.86885 108.949 6.88383L114.312 7.31376C114.756 7.3493 114.935 7.90256 114.598 8.19189L110.512 11.6919C110.369 11.8139 110.307 12.0053 110.351 12.1876L111.599 17.4208C111.702 17.8534 111.231 18.1954 110.852 17.9635L106.261 15.1592C106.101 15.0615 105.899 15.0615 105.739 15.1592L101.148 17.9635C100.769 18.1954 100.298 17.8534 100.401 17.4208L101.649 12.1876C101.693 12.0053 101.631 11.8139 101.488 11.6919L97.4024 8.19189C97.0646 7.90256 97.2444 7.3493 97.6877 7.31376L103.051 6.88383C103.237 6.86885 103.4 6.75056 103.472 6.57744L105.538 1.60996Z"
-                                fill="#FEC84B" />
-                            </g>
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip1_349_1212">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                            <clipPath id="clip2_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip3_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(24)" />
-                            </clipPath>
-                            <clipPath id="clip4_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip5_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(48)" />
-                            </clipPath>
-                            <clipPath id="clip6_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip7_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(72)" />
-                            </clipPath>
-                            <clipPath id="clip8_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                            <clipPath id="clip9_349_1212">
-                              <rect width="20" height="20" fill="white" transform="translate(96)" />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                    {% endif %}
-
-                    <div class="rating-text-wrap">
-                        {% if section.settings.main_rating_text != blank %}
-                            <p class="main-rating-text">{{ section.settings.main_rating_text }}</p>
-                        {% endif %}
-
-                        {% if section.settings.platform_img != blank %}
-                            <img src="{{ section.settings.platform_img | image_picker_url: 'default' }}" alt="Platform Logo" class="platform-logo" width="51" height="18">
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="content-group-text">
+        {% if layout == 'split' %}
+            {% comment %} ===== 40 / 60 SPLIT LAYOUT ===== {% endcomment %}
+            <div class="content-wrap layout-split">
+                <div class="split-left">
                     {% if section.settings.section_title != blank %}
-                        {% assign sec_tag = section.settings.section_title_tag %}
-                        {% assign sec_style = section.settings.section_title_style_class %}
-                        <{{ sec_tag }} class="dynamic-title{% if sec_style != blank %} {{ sec_style }}{% endif %}">
-                            {{ section.settings.section_title | newline_to_br }}
-                        </{{ sec_tag }}>
+                        <{{ sec_tag }} class="dynamic-title{% if sec_style != blank %} {{ sec_style }}{% endif %}">{{ section.settings.section_title }}</{{ sec_tag }}>
                     {% endif %}
-
-                    {% if section.settings.desc_text != blank %}
-                        <p class="desc-text">{{ section.settings.desc_text | newline_to_br }}</p>
+                    {% if section.settings.subheading_text != blank %}
+                        <p class="subheading-text">{{ section.settings.subheading_text }}</p>
                     {% endif %}
                 </div>
 
-                <div class="content-group-cta">
-                    {% if section.settings.highlight_text != blank %}
-                        <p class="highlight-text">{{ section.settings.highlight_text | newline_to_br }}</p>
+                <div class="split-right">
+                    {% if section.settings.desc_text != blank %}
+                        <div class="desc-text">{{ section.settings.desc_text }}</div>
                     {% endif %}
-                
+
                     {% if section.settings.show_btn or section.settings.show_btn_2 %}
-                        <div class="cta-buttons-wrap">
+                        <div class="btn-group">
                             {% if section.settings.show_btn %}
                                 <a href="{{ section.settings.btn_url }}" 
                                    class="btn btn-{{ section.settings.btn_style }}"
@@ -610,12 +236,12 @@
                                     {{ section.settings.btn_text }}
                                 </a>
                             {% endif %}
-                
+                            
                             {% if section.settings.show_btn_2 %}
-                                <a href="{{ section.settings.btn_2_url }}" 
-                                   class="btn btn-{{ section.settings.btn_2_style }}"
+                                <a href="{{ section.settings.btn_url_2 }}" 
+                                   class="btn btn-{{ section.settings.btn_style_2 }}"
                                    {% if section.settings.btn_2_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
-                                    {{ section.settings.btn_2_text }}
+                                    {{ section.settings.btn_text_2 }}
                                 </a>
                             {% endif %}
                         </div>
@@ -635,101 +261,136 @@
                     {% endif %}
                 </div>
             </div>
-        
-        </div>
+
+        {% else %}
+            {% comment %} ===== CENTERED (default) LAYOUT ===== {% endcomment %}
+            <div class="content-wrap layout-centered">
+                {% if section.settings.section_title != blank %}
+                    <{{ sec_tag }} class="dynamic-title{% if sec_style != blank %} {{ sec_style }}{% endif %}">{{ section.settings.section_title }}</{{ sec_tag }}>
+                {% endif %}
+
+                {% if section.settings.subheading_text != blank %}
+                    <p class="subheading-text">{{ section.settings.subheading_text }}</p>
+                {% endif %}
+
+                {% if section.settings.desc_text != blank %}
+                    <div class="desc-text">{{ section.settings.desc_text }}</div>
+                {% endif %}
+
+                {% if section.settings.show_btn or section.settings.show_btn_2 %}
+                    <div class="btn-group">
+                        {% if section.settings.show_btn %}
+                            <a href="{{ section.settings.btn_url }}" 
+                               class="btn btn-{{ section.settings.btn_style }}"
+                               {% if section.settings.btn_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                                {{ section.settings.btn_text }}
+                            </a>
+                        {% endif %}
+                        
+                        {% if section.settings.show_btn_2 %}
+                            <a href="{{ section.settings.btn_url_2 }}" 
+                               class="btn btn-{{ section.settings.btn_style_2 }}"
+                               {% if section.settings.btn_2_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                                {{ section.settings.btn_text_2 }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                
+                {% if section.settings.show_text_link and section.settings.text_link_text != blank %}
+                    <div class="pm-text-link-icon-wrap" style="--text-link-color: {{ section.settings.text_link_color }};">
+                        <a href="{{ section.settings.text_link_url }}"
+                           class="pm-text-link-icon"
+                           {% if section.settings.text_link_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                            {{ section.settings.text_link_text }}
+                            <svg viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.33333 10L7.16667 8.79167L10.125 5.83333H0V4.16667H10.125L7.16667 1.20833L8.33333 0L13.3333 5L8.33333 10Z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
 
     </div>
 </div>
 
 {% schema %}
 {
-  "name": "Book Promo - PM",
+  "name": "CTA Banner - PM",
   "elements": [
     {
       "type": "header",
-      "content": "Images"
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_layout",
+      "label": "Content Layout",
+      "info": "Centered = stacked under image. Split 40/60 = title+subheading on left, description+button on right.",
+      "default": "centered",
+      "options": [
+        { "label": "Centered (Default)", "value": "centered" },
+        { "label": "Split 40 / 60", "value": "split" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#F4FAF8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#19887D"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description Text Color",
+      "default": "#444444"
+    },
+    {
+      "type": "header",
+      "content": "Banner Image"
     },
     {
       "type": "image_picker",
-      "id": "book_img",
-      "label": "Central Book Image"
+      "id": "banner_img",
+      "label": "Banner Image"
     },
     {
       "type": "text",
-      "id": "book_img_alt",
-      "label": "Book Image Alt Text",
-      "default": "Book Cover",
-      "info": "Briefly describe the image for SEO and accessibility."
+      "id": "img_alt",
+      "label": "Image Alt Text (SEO)",
+      "default": "Book bundle showcase"
     },
     {
       "type": "header",
-      "content": "Left Review (Desktop Only)"
-    },
-    {
-      "type": "textarea",
-      "id": "left_review_text",
-      "label": "Review Text",
-      "default": "Betsy knocked this out of the park! Useful for coaches, business owners, and parents."
+      "content": "Text Content"
     },
     {
       "type": "text",
-      "id": "left_review_author",
-      "label": "Author Name",
-      "default": "Jason Bauer"
-    },
-    {
-      "type": "text",
-      "id": "left_review_source",
-      "label": "Review Source",
-      "default": "Review from Amazon"
-    },
-    {
-      "type": "header",
-      "content": "Right Review (Desktop Only)"
-    },
-    {
-      "type": "textarea",
-      "id": "right_review_text",
-      "label": "Review Text",
-      "default": "If you've ever said \"kids these days\" then start reading. Real-life strategy from one of the best."
-    },
-    {
-      "type": "text",
-      "id": "right_review_author",
-      "label": "Author Name",
-      "default": "Joanna Lane"
-    },
-    {
-      "type": "text",
-      "id": "right_review_source",
-      "label": "Review Source",
-      "default": "Review from Goodreads"
-    },
-    {
-      "type": "header",
-      "content": "Main Content Area"
-    },
-    {
-      "type": "text",
-      "id": "main_rating_text",
-      "label": "Rating Text",
-      "default": "4.8 out of 5 stars on"
-    },
-    {
-      "type": "image_picker",
-      "id": "platform_img",
-      "label": "Platform Logo (e.g. Amazon)"
-    },
-    {
-      "type": "textarea",
       "id": "section_title",
-      "label": "Main Title",
-      "default": "Kids These Days Book:\nEffective Strategies for\nCoaching Gen Z and Beyond"
+      "label": "Main Heading",
+      "default": "Ready for a better way to coach the conversation?"
     },
     {
       "type": "select",
       "id": "section_title_tag",
-      "label": "Title HTML Tag (SEO)",
+      "label": "Heading HTML Tag (SEO)",
       "default": "h2",
       "options": [
         { "label": "Heading 1 (H1)", "value": "h1" },
@@ -740,7 +401,7 @@
     {
       "type": "select",
       "id": "section_title_style_class",
-      "label": "Title Visual Style",
+      "label": "Heading Visual Style",
       "default": "h2",
       "options": [
         { "label": "H1 Style", "value": "h1" },
@@ -749,37 +410,38 @@
       ]
     },
     {
-      "type": "textarea",
-      "id": "desc_text",
-      "label": "Description Text",
-      "default": "Learn how to increase ownership, engagement, and accountability without lowering your standards or expectations."
+      "type": "text",
+      "id": "subheading_text",
+      "label": "Subheading (Optional)",
+      "default": "",
+      "info": "Small line of text shown below the heading. Leave blank to hide."
     },
     {
-      "type": "textarea",
-      "id": "highlight_text",
-      "label": "Highlight Text",
-      "default": "Available in paperback, eBook,\nand audiobook narrated by Betsy."
+      "type": "rich_text",
+      "id": "desc_text",
+      "label": "Description",
+      "default": "<p>Get your copy of Kids These Days and start using practical communication tools that help your message land.</p>"
     },
     {
       "type": "header",
-      "content": "Call To Action - Button 1"
+      "content": "Primary Button"
     },
     {
       "type": "checkbox",
       "id": "show_btn",
-      "label": "Show Button 1?",
+      "label": "Show Primary Button?",
       "default": "true"
     },
     {
       "type": "text",
       "id": "btn_text",
-      "label": "Button 1 Text",
-      "default": "Get Your Copy"
+      "label": "Button Text",
+      "default": "Buy Kids These Days"
     },
     {
       "type": "text",
       "id": "btn_url",
-      "label": "Button 1 Link",
+      "label": "Button Link",
       "default": "#"
     },
     {
@@ -791,7 +453,7 @@
     {
       "type": "select",
       "id": "btn_style",
-      "label": "Button 1 Style",
+      "label": "Button Style",
       "default": "primary",
       "options": [
         { "label": "Primary", "value": "primary" },
@@ -800,24 +462,24 @@
     },
     {
       "type": "header",
-      "content": "Call To Action - Button 2"
+      "content": "Secondary Button"
     },
     {
       "type": "checkbox",
       "id": "show_btn_2",
-      "label": "Show Button 2?",
+      "label": "Show Secondary Button?",
       "default": "false"
     },
     {
       "type": "text",
-      "id": "btn_2_text",
-      "label": "Button 2 Text",
+      "id": "btn_text_2",
+      "label": "Button Text",
       "default": "Learn More"
     },
     {
       "type": "text",
-      "id": "btn_2_url",
-      "label": "Button 2 Link",
+      "id": "btn_url_2",
+      "label": "Button Link",
       "default": "#"
     },
     {
@@ -828,8 +490,8 @@
     },
     {
       "type": "select",
-      "id": "btn_2_style",
-      "label": "Button 2 Style",
+      "id": "btn_style_2",
+      "label": "Button Style",
       "default": "secondary",
       "options": [
         { "label": "Primary", "value": "primary" },
@@ -869,41 +531,6 @@
       "id": "text_link_color",
       "label": "Text Link Color",
       "default": "#535862"
-    },
-    {
-      "type": "header",
-      "content": "Text & Icon Colors",
-      "style": "subheading"
-    },
-    {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Headings Color",
-      "default": "#111111"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Body Text Color",
-      "default": "#444444"
-    },
-    {
-      "type": "color",
-      "id": "review_text_color",
-      "label": "Review Text Color",
-      "default": "#444444"
-    },
-    {
-      "type": "color",
-      "id": "highlight_color",
-      "label": "Highlight Text Color",
-      "default": "#19887D"
-    },
-    {
-      "type": "color",
-      "id": "source_color",
-      "label": "Author Source Color",
-      "default": "#999999"
     },
     {
       "type": "header",
@@ -976,7 +603,7 @@
   ],
   "presets": [
     {
-      "name": "Book Promo - PM",
+      "name": "CTA Banner - PM",
       "category": "CUSTOM"
     }
   ]

@@ -1,4 +1,4 @@
-<!-- Start Version 1.8.2 -->
+<!-- Start Version 1.8.3 -->
 {% comment %} === BUILD SPACING CLASSES === {% endcomment %}
 {% assign spacing_classes = '' %}
 {% if section.settings.margin_top != 'none' %}{% assign spacing_classes = spacing_classes | append: ' mt-' | append: section.settings.margin_top %}{% endif %}
@@ -610,7 +610,7 @@
                                     {% assign url_key  = 'platform_' | append: i | append: '_url' %}
                                     {% assign p_logo = block.settings[logo_key] %}
                                     {% if p_logo != blank %}
-                                        <a href="{{ block.settings[url_key] }}" class="platform-btn">
+                                        <a href="{{ block.settings[url_key] }}" class="platform-btn"{% if block.settings.platform_new_tab %} target="_blank" rel="noopener"{% endif %}>
                                             <span class="platform-label">
                                                 {{ block.settings.platform_label }}
                                                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z" fill="white"/></svg>
@@ -718,7 +718,7 @@
                                     </a>
                                 {% endif %}
                                 {% if block.settings.social_email != blank %}
-                                    <a href="mailto:{{ block.settings.social_email }}" aria-label="Email">
+                                    <a href="{{ block.settings.social_email }}" aria-label="Email">
                                         <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.3335 5.3335L12.2201 12.9541C13.1016 13.5712 13.5424 13.8797 14.0218 13.9992C14.4454 14.1048 14.8883 14.1048 15.3118 13.9992C15.7913 13.8797 16.232 13.5712 17.1136 12.9541L28.0002 5.3335M7.7335 22.6668H21.6002C23.8404 22.6668 24.9605 22.6668 25.8161 22.2309C26.5688 21.8474 27.1807 21.2354 27.5642 20.4828C28.0002 19.6271 28.0002 18.507 28.0002 16.2668V7.7335C28.0002 5.49329 28.0002 4.37318 27.5642 3.51753C27.1807 2.76489 26.5688 2.15296 25.8161 1.76947C24.9605 1.3335 23.8404 1.3335 21.6002 1.3335H7.7335C5.49329 1.3335 4.37318 1.3335 3.51753 1.76947C2.76489 2.15296 2.15296 2.76489 1.76947 3.51753C1.3335 4.37318 1.3335 5.49329 1.3335 7.7335V16.2668C1.3335 18.507 1.3335 19.6271 1.76947 20.4828C2.15296 21.2354 2.76489 21.8474 3.51753 22.2309C4.37318 22.6668 5.49329 22.6668 7.7335 22.6668Z" stroke="black" stroke-width="2.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                     </a>
                                 {% endif %}
@@ -1094,6 +1094,7 @@
         { "type": "rich_text", "id": "card_desc", "label": "Description", "default": "" },
         { "type": "header", "content": "Module: Platform Buttons" },
         { "type": "checkbox", "id": "show_platforms", "label": "Show Platform Buttons?", "default": false },
+        { "type": "checkbox", "id": "platform_new_tab", "label": "Open Platform Links in New Tab?", "default": true },
         { "type": "text", "id": "platform_label", "label": "Button Label", "default": "Available at" },
         { "type": "image_picker", "id": "platform_1_logo", "label": "Platform 1 Logo" },
         { "type": "text", "id": "platform_1_url", "label": "Platform 1 URL", "default": "#" },
